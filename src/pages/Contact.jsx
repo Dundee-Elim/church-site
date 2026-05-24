@@ -1,0 +1,188 @@
+import { useState } from 'react';
+import { motion } from 'framer-motion';
+import { CheckCircle, Send } from 'lucide-react';
+import SEOHead from '@/components/SEOHead';
+import { useSiteContent } from '@/contexts/SiteContentContext';
+import { contactInfoConfig } from '@/lib/sitePresentation';
+import { fadeLeft, fadeRight, subtleTap } from '@/lib/motion';
+import { createContactSubmission } from '@/lib/siteContentApi';
+import { openMailto } from '@/lib/mailto';
+import { isSupabaseConfigured } from '@/lib/supabaseClient';
+import { formatPhoneHref, resolveMediaSrc } from '@/lib/siteContentUtils';
+
+const specularLine = (
+  <div className="absolute inset-x-0 top-0 h-px" style={{ background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent)' }} />
+);
+
+const inputClass = 'glass-input-field';
+
+export default function Contact() {
+  const { content } = useSiteContent();
+  const [form, setForm] = useState({ name: '', email: '', phone: '', subject: '', message: '' });
+  const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  async function handleSubmit(event) {
+    event.preventDefault();
+    setLoading(true);
+    setError('');
+
+    try {
+      if (isSupabaseConfigured) {
+        await createContactSubmission(form);
+      } else {
+        openMailto({
+          to: content.settings.contact.email,
+          subject: form.subject ? `Website contact: ${form.subject}` : `Website contact from ${form.name}`,
+          body: [
+            `Name: ${form.name}`,
+            `Email: ${form.email}`,
+            `Phone: ${form.phone || 'Not provided'}`,
+            '',
+            form.message,
+          ].join('\n'),
+        });
+      }
+
+      setSubmitted(true);
+    } catch (submitError) {
+      setError(submitError.message || 'Unable to send your message.');
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <div className="pb-20">
+      <SEOHead title={content.contact.seo.title} description={content.contact.seo.description} path="/contact" />
+
+      <div className="page-hero">
+        <div className="page-hero-media">
+          <img src={resolveMediaSrc(content.contact.header.image)} alt={content.contact.header.image.alt || 'Contact Dundee Elim'} className="w-full h-full object-cover opacity-20" />
+          <div className="page-hero-overlay" />
+        </div>
+        <div className="page-hero-inner">
+          <span className="page-eyebrow">{content.contact.header.eyebrow}</span>
+          <h1 className="page-title">
+            {content.contact.header.titleLead} <span className="text-gradient">{content.contact.header.titleHighlight}</span>
+          </h1>
+          <p className="page-description">{content.contact.header.description}</p>
+        </div>
+      </div>
+
+      <div className="px-4 py-12">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-5 gap-10">
+          <div className="lg:col-span-2 space-y-4">
+            {content.contact.infoCards.map((card, index) => {
+              const style = contactInfoConfig[card.kind] || contactInfoConfig.address;
+              const Icon = style.Icon;
+
+              return (
+                <motion.div key={`${card.kind}-${index}`} {...fadeLeft} transition={{ ...fadeLeft.transition, delay: index * 0.06 }} className="glass-panel p-7">
+                  <div className="glass-icon-badge mb-4" style={{ background: style.bg }}>
+                    <Icon className={`w-6 h-6 ${style.color}`} />
+                  </div>
+                  <h3 className="text-white font-semibold text-lg mb-3">{card.title}</h3>
+                  {card.descriptionLines.length > 0 && (
+                    <p className="text-white/55 text-sm leading-relaxed">
+                      {card.descriptionLines.map((line) => (
+                        <span key={line} className="block">{line}</span>
+                      ))}
+                    </p>
+                  )}
+                  {card.items.length > 0 && (
+                    <div className="space-y-2 text-sm">
+                      {card.items.map((item) => {
+                        const isEmail = item.label.toLowerCase().includes('email');
+                        const isPhone = item.label.toLowerCase().includes('phone');
+
+                        return (
+                          <div key={item.label} className="flex justify-between gap-3">
+                            <span className="text-white/55">{item.label}</span>
+                            {isEmail ? (
+                              <a href={`mailto:${item.value}`} className="text-white font-medium hover:text-blue-300 transition-colors">{item.value}</a>
+                            ) : isPhone ? (
+                              <a href={`tel:${formatPhoneHref(item.value)}`} className="text-white font-medium hover:text-blue-300 transition-colors">{item.value}</a>
+                            ) : (
+                              <span className="text-white font-medium">{item.value}</span>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                  {card.linkLabel && card.linkUrl && (
+                    <motion.a {...subtleTap} href={card.linkUrl} target="_blank" rel="noreferrer" className="glass-action-soft mt-4 inline-flex px-5 text-sm text-blue-300 hover:text-white">
+                      {card.linkLabel} →
+                    </motion.a>
+                  )}
+                </motion.div>
+              );
+            })}
+          </div>
+
+          <motion.div {...fadeRight} className="glass-panel lg:col-span-3 p-8">
+            {submitted ? (
+              <div className="flex flex-col items-center justify-center h-full py-16 text-center">
+                <div className="p-4 rounded-full mb-5" style={{ background: 'rgba(34,197,94,0.15)' }}>
+                  <CheckCircle className="w-10 h-10 text-green-400" />
+                </div>
+                <h3 className="font-display text-2xl font-bold text-white mb-3">{content.contact.form.successTitle}</h3>
+                <p className="text-white/55">{content.contact.form.successDescription}</p>
+                <motion.button {...subtleTap} onClick={() => { setSubmitted(false); setForm({ name: '', email: '', phone: '', subject: '', message: '' }); }} className="glass-action-soft mt-6 px-5 text-sm text-blue-300 hover:text-white">
+                  {content.contact.form.resetLabel}
+                </motion.button>
+              </div>
+            ) : (
+              <>
+                <h2 className="font-display text-2xl font-bold text-white mb-6">{content.contact.form.title}</h2>
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-white/40 text-xs font-medium mb-2 uppercase tracking-wider">Your Name *</label>
+                      <input required type="text" value={form.name} onChange={(event) => setForm({ ...form, name: event.target.value })} className={inputClass} placeholder="John Smith" />
+                    </div>
+                    <div>
+                      <label className="block text-white/40 text-xs font-medium mb-2 uppercase tracking-wider">Email *</label>
+                      <input required type="email" value={form.email} onChange={(event) => setForm({ ...form, email: event.target.value })} className={inputClass} placeholder="john@example.com" />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-white/40 text-xs font-medium mb-2 uppercase tracking-wider">Phone</label>
+                      <input type="tel" value={form.phone} onChange={(event) => setForm({ ...form, phone: event.target.value })} className={inputClass} placeholder="+44..." />
+                    </div>
+                    <div>
+                      <label className="block text-white/40 text-xs font-medium mb-2 uppercase tracking-wider">Subject</label>
+                      <input type="text" value={form.subject} onChange={(event) => setForm({ ...form, subject: event.target.value })} className={inputClass} placeholder="How can we help?" />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-white/40 text-xs font-medium mb-2 uppercase tracking-wider">Message *</label>
+                    <textarea required rows={5} value={form.message} onChange={(event) => setForm({ ...form, message: event.target.value })} className={inputClass} placeholder="Your message..." />
+                  </div>
+                  {error && (
+                    <div className="rounded-[1.1rem] px-4 py-3 text-sm text-red-200" style={{ background: 'rgba(239,68,68,0.12)', border: '1px solid rgba(239,68,68,0.2)' }}>
+                      {error}
+                    </div>
+                  )}
+                  <motion.button {...subtleTap} type="submit" disabled={loading} className="glass-action-primary w-full disabled:opacity-50">
+                    <Send className="w-4 h-4" />
+                    {loading ? 'Sending...' : content.contact.form.submitLabel}
+                  </motion.button>
+                </form>
+              </>
+            )}
+          </motion.div>
+        </div>
+      </div>
+
+      <div className="px-4 mt-10">
+        <div className="glass-panel section-inner overflow-hidden p-1">
+          <iframe src={content.contact.mapEmbedUrl || content.settings.links.mapsEmbedUrl} className="h-72 w-full rounded-[1.35rem]" style={{ border: 0 }} allowFullScreen loading="lazy" title="Church Location" />
+        </div>
+      </div>
+    </div>
+  );
+}
