@@ -47,10 +47,23 @@ function parseFeed(xml) {
 }
 
 async function fetchYoutubeVideos(channelId) {
-  const res = await fetch(`https://www.youtube.com/feeds/videos.xml?channel_id=${encodeURIComponent(channelId)}`);
-  if (!res.ok) throw new Error('Unable to fetch YouTube feed');
-  const xml = await res.text();
-  return parseFeed(xml);
+  // Support both channel IDs (UC...) and legacy usernames or handles (@name)
+  const tryUrls = [];
+  if (String(channelId).startsWith('@')) {
+    tryUrls.push(`https://www.youtube.com/feeds/videos.xml?user=${encodeURIComponent(String(channelId).replace(/^@/, ''))}`);
+  }
+  tryUrls.push(`https://www.youtube.com/feeds/videos.xml?channel_id=${encodeURIComponent(channelId)}`);
+
+  for (const url of tryUrls) {
+    const res = await fetch(url);
+    if (!res.ok) {
+      continue;
+    }
+    const xml = await res.text();
+    return parseFeed(xml);
+  }
+
+  throw new Error('Unable to fetch YouTube feed');
 }
 
 async function main() {
