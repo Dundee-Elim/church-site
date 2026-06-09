@@ -119,6 +119,9 @@ export default function Give() {
       <section className="section-wrap">
         <div className="section-inner">
           <h2 className="section-title mb-8 text-center sm:mb-10">{content.give.impact.title}</h2>
+          <p className="section-copy mb-8 text-center">
+            Giving supports this part of our mission: Serve our city.
+          </p>
           <div className="public-grid grid-cols-2 sm:grid-cols-4">
             {content.give.impact.items.map((item) => (
               <div key={item.label} className="public-card text-center">

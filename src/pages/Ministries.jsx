@@ -161,6 +161,18 @@ export default function Ministries() {
           ))}
         </div>
       </section>
+
+      <section className="section-wrap-compact pt-0">
+        <div className="section-inner-narrow">
+          <div className="public-card text-center">
+            {specularLine}
+            <span className="section-kicker">Build community</span>
+            <p className="body-copy mx-auto mt-3 max-w-2xl">
+              Ministries are one way we make space for people to belong, grow, and follow Jesus together.
+            </p>
+          </div>
+        </div>
+      </section>
     </div>
   );
 }

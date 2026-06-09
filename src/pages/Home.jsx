@@ -202,6 +202,13 @@ export default function Home() {
                 {paragraph}
               </p>
             ))}
+            <div className="mb-6 flex flex-col gap-3 rounded-[var(--radius-soft)] border border-white/10 bg-white/[0.04] px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+              <span className="section-kicker text-blue-200">Proclaim · Build · Serve</span>
+              <Link to="/about" className="focus-ring inline-flex items-center gap-1.5 rounded-full text-sm font-medium text-blue-300 transition-colors hover:text-white">
+                Our vision and mission
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+            </div>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
               {content.home.pastors.stats.map((item) => (
                 <div key={item.label} className="public-card p-4 text-center">
