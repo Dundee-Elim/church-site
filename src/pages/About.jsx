@@ -1,5 +1,4 @@
 import { motion } from 'framer-motion';
-import { Compass, HeartHandshake, Megaphone, UsersRound } from 'lucide-react';
 import SEOHead from '@/components/SEOHead';
 import { useSiteContent } from '@/contexts/SiteContentContext';
 import { fadeRight, fadeUp, subtleTap } from '@/lib/motion';
@@ -11,27 +10,9 @@ const specularLine = (
 );
 
 const missionPillars = [
-  {
-    title: 'Proclaim Christ',
-    description: 'Centred on Jesus in worship, teaching, and everyday witness.',
-    Icon: Megaphone,
-    bg: 'rgba(96,165,250,0.14)',
-    color: 'text-blue-200',
-  },
-  {
-    title: 'Build community',
-    description: 'Making space for people to belong, grow, and follow Jesus together.',
-    Icon: UsersRound,
-    bg: 'rgba(45,212,191,0.12)',
-    color: 'text-teal-200',
-  },
-  {
-    title: 'Serve our city',
-    description: 'Showing the practical love of Christ across Dundee.',
-    Icon: HeartHandshake,
-    bg: 'rgba(167,139,250,0.14)',
-    color: 'text-violet-200',
-  },
+  'Proclaim Christ',
+  'Build community',
+  'Serve our city',
 ];
 
 export default function About() {
@@ -80,45 +61,39 @@ export default function About() {
       </section>
 
       <section className="section-wrap-compact">
-        <div className="section-inner">
-          <motion.div {...fadeUp} className="glass-panel-strong lg-iridescent p-6 sm:p-8 lg:p-10">
+        <div className="section-inner-narrow">
+          <motion.div
+            {...fadeUp}
+            className="glass-panel px-6 py-7 text-center sm:px-8 sm:py-9 lg:px-10 lg:py-11"
+            style={{
+              background:
+                'linear-gradient(135deg, rgba(14,27,56,0.9), rgba(8,13,31,0.92)), radial-gradient(circle at 50% 0%, rgba(56,189,248,0.13), transparent 52%), radial-gradient(circle at 100% 100%, rgba(139,92,246,0.12), transparent 46%)',
+              borderColor: 'rgba(255,255,255,0.13)',
+            }}
+          >
             {specularLine}
-            <div className="relative z-10 grid gap-8 lg:grid-cols-[0.95fr_1.05fr] lg:items-center">
-              <div>
-                <span className="glass-chip inline-flex px-4 text-[0.68rem] font-semibold uppercase tracking-[0.24em] text-blue-200">
-                  Proclaim · Build · Serve
-                </span>
-                <div className="mt-5 flex items-center gap-3">
-                  <div className="glass-icon-badge shrink-0" style={{ background: 'rgba(59,130,246,0.12)' }}>
-                    <Compass className="h-6 w-6 text-blue-200" />
+            <div className="relative z-10">
+              <h2 className="font-display text-2xl font-semibold leading-tight text-cyan-100 sm:text-3xl">
+                Vision & Mission
+              </h2>
+              <h2 className="mx-auto mt-5 max-w-3xl font-display text-[2rem] font-bold leading-[1.12] text-white sm:text-[2.45rem] sm:leading-[1.1] lg:text-[2.65rem]">
+                To see the people of Dundee transformed by Jesus.
+              </h2>
+              <p className="mx-auto mt-6 max-w-2xl text-base font-medium leading-8 text-white/72 sm:text-lg sm:leading-9">
+                We live this out through three simple commitments.
+              </p>
+
+              <div className="mx-auto mt-8 flex max-w-2xl flex-col overflow-hidden rounded-[var(--radius-soft)] border border-white/10 bg-white/[0.035] sm:flex-row">
+                {missionPillars.map((pillar) => (
+                  <div key={pillar} className="border-b border-white/10 px-5 py-[1.125rem] last:border-b-0 sm:flex-1 sm:border-b-0 sm:border-r sm:px-5 sm:py-5 sm:last:border-r-0">
+                    <h3 className="font-display text-[1.22rem] font-semibold leading-[1.25] text-white sm:text-xl">{pillar}</h3>
                   </div>
-                  <span className="section-kicker">Vision & Mission</span>
-                </div>
-                <h2 className="mt-5 font-display text-3xl font-bold leading-tight text-white sm:text-4xl lg:text-[2.85rem]">
-                  To see the people of Dundee transformed by Jesus.
-                </h2>
-                <p className="body-copy mt-5 max-w-2xl">
-                  Our mission is simple and shared: Proclaim Christ. Build community. Serve our city.
-                </p>
+                ))}
               </div>
 
-              <div className="grid gap-4">
-                {missionPillars.map((pillar) => {
-                  const Icon = pillar.Icon;
-
-                  return (
-                    <div key={pillar.title} className="public-card flex gap-4 p-5 sm:p-6">
-                      <div className="glass-icon-badge shrink-0" style={{ background: pillar.bg }}>
-                        <Icon className={`h-5 w-5 ${pillar.color}`} />
-                      </div>
-                      <div>
-                        <h3 className="card-title text-lg">{pillar.title}</h3>
-                        <p className="body-copy mt-1 text-sm">{pillar.description}</p>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
+              <p className="mt-7 bg-gradient-to-r from-white via-cyan-100 to-blue-200 bg-clip-text font-display text-xl font-semibold leading-[1.15] text-transparent sm:text-2xl">
+                Proclaim · Build · Serve
+              </p>
             </div>
           </motion.div>
         </div>

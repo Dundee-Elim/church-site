@@ -174,6 +174,36 @@ export default function Home() {
         </div>
       </section>
 
+      <section className="section-wrap-compact pt-2">
+        <div className="section-inner-narrow">
+          <motion.div
+            {...fadeUp}
+            className="relative overflow-hidden rounded-[var(--radius-panel)] border border-white/10 px-5 py-9 text-center sm:px-8 sm:py-11"
+            style={{
+              background:
+                'linear-gradient(135deg, rgba(14,27,56,0.9), rgba(8,13,31,0.92)), radial-gradient(circle at 50% 0%, rgba(56,189,248,0.13), transparent 52%), radial-gradient(circle at 100% 100%, rgba(139,92,246,0.12), transparent 46%)',
+              borderColor: 'rgba(255,255,255,0.13)',
+              boxShadow: '0 24px 80px rgba(0,0,0,0.24)',
+            }}
+          >
+            <div className="absolute inset-x-0 top-0 h-px" style={{ background: 'linear-gradient(90deg, transparent, rgba(125,211,252,0.32), transparent)' }} />
+            <div className="relative z-10">
+              <span className="section-kicker text-cyan-200/85">Our Mission</span>
+              <h2 className="mx-auto mt-4 max-w-4xl bg-gradient-to-r from-white via-cyan-100 to-blue-200 bg-clip-text font-display text-[2.35rem] font-bold leading-[1.08] text-transparent sm:text-5xl sm:leading-[1.06] lg:text-[3.85rem]">
+                Proclaim · Build · Serve
+              </h2>
+              <p className="mx-auto mt-5 max-w-2xl text-base font-medium leading-8 text-white/76 sm:text-lg sm:leading-9">
+                Proclaim Christ. Build community. Serve our city.
+              </p>
+              <Link to="/about" className="focus-ring mt-7 inline-flex rounded-full text-sm font-semibold text-cyan-100 transition-colors hover:text-white">
+                Our vision and mission
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Link>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
       <section className="section-wrap-spacious">
         <div className="section-inner grid grid-cols-1 items-center gap-10 lg:grid-cols-2 lg:gap-12">
           <motion.div
@@ -202,13 +232,6 @@ export default function Home() {
                 {paragraph}
               </p>
             ))}
-            <div className="mb-6 flex flex-col gap-3 rounded-[var(--radius-soft)] border border-white/10 bg-white/[0.04] px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
-              <span className="section-kicker text-blue-200">Proclaim · Build · Serve</span>
-              <Link to="/about" className="focus-ring inline-flex items-center gap-1.5 rounded-full text-sm font-medium text-blue-300 transition-colors hover:text-white">
-                Our vision and mission
-                <ArrowRight className="h-4 w-4" />
-              </Link>
-            </div>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
               {content.home.pastors.stats.map((item) => (
                 <div key={item.label} className="public-card p-4 text-center">
