@@ -71,21 +71,21 @@ export default function Contact() {
         </div>
       </div>
 
-      <div className="px-4 py-12">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-5 gap-10">
+      <section className="section-wrap">
+        <div className="section-inner grid grid-cols-1 gap-8 lg:grid-cols-5 lg:gap-10">
           <div className="lg:col-span-2 space-y-4">
             {content.contact.infoCards.map((card, index) => {
               const style = contactInfoConfig[card.kind] || contactInfoConfig.address;
               const Icon = style.Icon;
 
               return (
-                <motion.div key={`${card.kind}-${index}`} {...fadeLeft} transition={{ ...fadeLeft.transition, delay: index * 0.06 }} className="glass-panel p-7">
+                <motion.div key={`${card.kind}-${index}`} {...fadeLeft} transition={{ ...fadeLeft.transition, delay: index * 0.06 }} className="public-card">
                   <div className="glass-icon-badge mb-4" style={{ background: style.bg }}>
                     <Icon className={`w-6 h-6 ${style.color}`} />
                   </div>
                   <h3 className="text-white font-semibold text-lg mb-3">{card.title}</h3>
                   {card.descriptionLines.length > 0 && (
-                    <p className="text-white/55 text-sm leading-relaxed">
+                    <p className="body-copy text-sm">
                       {card.descriptionLines.map((line) => (
                         <span key={line} className="block">{line}</span>
                       ))}
@@ -99,7 +99,7 @@ export default function Contact() {
 
                         return (
                           <div key={item.label} className="flex justify-between gap-3">
-                            <span className="text-white/55">{item.label}</span>
+                            <span className="metadata-text">{item.label}</span>
                             {isEmail ? (
                               <a href={`mailto:${item.value}`} className="text-white font-medium hover:text-blue-300 transition-colors">{item.value}</a>
                             ) : isPhone ? (
@@ -122,7 +122,7 @@ export default function Contact() {
             })}
           </div>
 
-          <motion.div {...fadeRight} className="glass-panel lg:col-span-3 p-8">
+          <motion.div {...fadeRight} className="glass-panel p-6 sm:p-8 lg:col-span-3">
             {submitted ? (
               <div className="flex flex-col items-center justify-center h-full py-16 text-center">
                 <div className="p-4 rounded-full mb-5" style={{ background: 'rgba(34,197,94,0.15)' }}>
@@ -140,27 +140,27 @@ export default function Contact() {
                 <form onSubmit={handleSubmit} className="space-y-4">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-white/40 text-xs font-medium mb-2 uppercase tracking-wider">Your Name *</label>
-                      <input required type="text" value={form.name} onChange={(event) => setForm({ ...form, name: event.target.value })} className={inputClass} placeholder="John Smith" />
+                      <label htmlFor="contact-name" className="metadata-text mb-2 block uppercase tracking-wider">Your Name *</label>
+                      <input id="contact-name" required type="text" value={form.name} onChange={(event) => setForm({ ...form, name: event.target.value })} className={inputClass} placeholder="John Smith" />
                     </div>
                     <div>
-                      <label className="block text-white/40 text-xs font-medium mb-2 uppercase tracking-wider">Email *</label>
-                      <input required type="email" value={form.email} onChange={(event) => setForm({ ...form, email: event.target.value })} className={inputClass} placeholder="john@example.com" />
+                      <label htmlFor="contact-email" className="metadata-text mb-2 block uppercase tracking-wider">Email *</label>
+                      <input id="contact-email" required type="email" value={form.email} onChange={(event) => setForm({ ...form, email: event.target.value })} className={inputClass} placeholder="john@example.com" />
                     </div>
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-white/40 text-xs font-medium mb-2 uppercase tracking-wider">Phone</label>
-                      <input type="tel" value={form.phone} onChange={(event) => setForm({ ...form, phone: event.target.value })} className={inputClass} placeholder="+44..." />
+                      <label htmlFor="contact-phone" className="metadata-text mb-2 block uppercase tracking-wider">Phone</label>
+                      <input id="contact-phone" type="tel" value={form.phone} onChange={(event) => setForm({ ...form, phone: event.target.value })} className={inputClass} placeholder="+44..." />
                     </div>
                     <div>
-                      <label className="block text-white/40 text-xs font-medium mb-2 uppercase tracking-wider">Subject</label>
-                      <input type="text" value={form.subject} onChange={(event) => setForm({ ...form, subject: event.target.value })} className={inputClass} placeholder="How can we help?" />
+                      <label htmlFor="contact-subject" className="metadata-text mb-2 block uppercase tracking-wider">Subject</label>
+                      <input id="contact-subject" type="text" value={form.subject} onChange={(event) => setForm({ ...form, subject: event.target.value })} className={inputClass} placeholder="How can we help?" />
                     </div>
                   </div>
                   <div>
-                    <label className="block text-white/40 text-xs font-medium mb-2 uppercase tracking-wider">Message *</label>
-                    <textarea required rows={5} value={form.message} onChange={(event) => setForm({ ...form, message: event.target.value })} className={inputClass} placeholder="Your message..." />
+                    <label htmlFor="contact-message" className="metadata-text mb-2 block uppercase tracking-wider">Message *</label>
+                    <textarea id="contact-message" required rows={5} value={form.message} onChange={(event) => setForm({ ...form, message: event.target.value })} className={inputClass} placeholder="Your message..." />
                   </div>
                   {error && (
                     <div className="rounded-[1.1rem] px-4 py-3 text-sm text-red-200" style={{ background: 'rgba(239,68,68,0.12)', border: '1px solid rgba(239,68,68,0.2)' }}>
@@ -176,11 +176,11 @@ export default function Contact() {
             )}
           </motion.div>
         </div>
-      </div>
+      </section>
 
-      <div className="px-4 mt-10">
-        <div className="glass-panel section-inner overflow-hidden p-1">
-          <iframe src={content.contact.mapEmbedUrl || content.settings.links.mapsEmbedUrl} className="h-72 w-full rounded-[1.35rem]" style={{ border: 0 }} allowFullScreen loading="lazy" title="Church Location" />
+      <div className="section-wrap-compact pt-0">
+        <div className="public-media section-inner">
+          <iframe src={content.contact.mapEmbedUrl || content.settings.links.mapsEmbedUrl} className="h-72 w-full" style={{ border: 0 }} allowFullScreen loading="lazy" title="Church Location" />
         </div>
       </div>
     </div>

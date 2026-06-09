@@ -32,9 +32,9 @@ export default function Give() {
         </div>
       </div>
 
-      <section className="py-12 px-4">
-        <div className="max-w-4xl mx-auto">
-          <div className="glass-panel-strong mb-10 p-10 text-center">
+      <section className="section-wrap-compact">
+        <div className="section-inner-narrow">
+          <div className="glass-panel-strong p-6 text-center sm:p-10">
             <div className="absolute inset-0" style={{ background: 'linear-gradient(135deg, rgba(59,130,246,0.06), rgba(139,92,246,0.06))' }} />
             <div className="relative z-10">
               <Heart className="w-10 h-10 text-red-400 mx-auto mb-5" />
@@ -45,21 +45,21 @@ export default function Give() {
         </div>
       </section>
 
-      <section className="py-12 px-4">
-        <div className="max-w-7xl mx-auto">
-          <h2 className="section-title text-center">{content.give.methodsTitle}</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+      <section className="section-wrap">
+        <div className="section-inner">
+          <h2 className="section-title mb-8 text-center sm:mb-10">{content.give.methodsTitle}</h2>
+          <div className="public-grid grid-cols-1 md:grid-cols-3">
             {content.give.methods.map((method, index) => {
               const style = giveMethodConfig[method.kind] || giveMethodConfig.online;
               const Icon = style.Icon;
 
               return (
-                <motion.div key={`${method.kind}-${index}`} {...fadeUp} transition={{ ...fadeUp.transition, delay: index * 0.06 }} className="glass-panel p-8">
+                <motion.div key={`${method.kind}-${index}`} {...fadeUp} transition={{ ...fadeUp.transition, delay: index * 0.06 }} className="public-card">
                   <div className="glass-icon-badge mb-5" style={{ background: style.bg }}>
                     <Icon className={`w-7 h-7 ${style.color}`} />
                   </div>
-                  <h3 className="font-display text-xl font-bold text-white mb-3">{method.title}</h3>
-                  <p className="text-white/55 text-sm leading-relaxed mb-4">{method.description}</p>
+                  <h3 className="card-title mb-3">{method.title}</h3>
+                  <p className="body-copy mb-4 text-sm">{method.description}</p>
                   {method.kind === 'online' && method.ctaLabel && method.ctaUrl && (
                     <motion.a {...subtleTap} href={method.ctaUrl} target="_blank" rel="noreferrer" className="glass-action-primary px-5 text-sm font-semibold">
                       {method.ctaLabel}
@@ -98,15 +98,15 @@ export default function Give() {
         </div>
       </section>
 
-      <section className="py-12 px-4">
-        <div className="max-w-4xl mx-auto">
-          <div className="glass-panel flex flex-col gap-6 p-8 sm:flex-row sm:items-start">
+      <section className="section-wrap-compact">
+        <div className="section-inner-narrow">
+          <div className="public-card flex flex-col gap-6 sm:flex-row sm:items-start">
             <div className="glass-icon-badge shrink-0" style={{ background: 'rgba(34,197,94,0.1)' }}>
               <Globe className="w-7 h-7 text-green-400" />
             </div>
             <div>
-              <h3 className="font-display text-xl font-bold text-white mb-2">{content.give.giftAid.title}</h3>
-              <p className="text-white/55 text-sm leading-relaxed mb-4">{content.give.giftAid.description}</p>
+              <h3 className="card-title mb-2">{content.give.giftAid.title}</h3>
+              <p className="body-copy mb-4 text-sm">{content.give.giftAid.description}</p>
               <motion.a {...subtleTap} href={content.give.giftAid.ctaUrl} target="_blank" rel="noreferrer" className="glass-action-soft inline-flex px-5 text-sm font-medium text-green-300 hover:text-white" style={{ background: 'rgba(34,197,94,0.1)', border: '1px solid rgba(34,197,94,0.2)' }}>
                 {content.give.giftAid.ctaLabel}
                 <ArrowRight className="w-4 h-4" />
@@ -116,24 +116,24 @@ export default function Give() {
         </div>
       </section>
 
-      <section className="py-12 px-4">
-        <div className="max-w-7xl mx-auto">
-          <h2 className="section-title text-center">{content.give.impact.title}</h2>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+      <section className="section-wrap">
+        <div className="section-inner">
+          <h2 className="section-title mb-8 text-center sm:mb-10">{content.give.impact.title}</h2>
+          <div className="public-grid grid-cols-2 sm:grid-cols-4">
             {content.give.impact.items.map((item) => (
-              <div key={item.label} className="glass-panel p-6 text-center">
+              <div key={item.label} className="public-card text-center">
                 <div className="text-3xl mb-3">{item.icon}</div>
-                <p className="text-white/60 text-sm font-medium">{item.label}</p>
+                <p className="body-copy text-sm font-medium">{item.label}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="py-12 px-4">
-        <div className="glass-panel section-inner-narrow p-8 text-center">
+      <section className="section-wrap-compact">
+        <div className="public-card section-inner-narrow text-center">
           <h3 className="text-white font-semibold text-lg mb-2">{content.give.contactCta.title}</h3>
-          <p className="text-white/50 text-sm mb-5">{content.give.contactCta.description}</p>
+          <p className="body-copy mb-5 text-sm">{content.give.contactCta.description}</p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <motion.a {...subtleTap} href={`mailto:${content.settings.contact.email}`} className="glass-action-soft px-5 text-sm font-medium text-blue-300 hover:text-white">
               <Mail className="w-4 h-4" />

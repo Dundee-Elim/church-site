@@ -54,11 +54,12 @@ export default function Events() {
         </div>
       </div>
 
-      <div className="px-4 mb-8">
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div className="section-wrap-compact pb-8">
+        <div className="section-inner flex flex-col items-center justify-between gap-4 sm:flex-row">
           <div className="glass-chip-set">
             {views.map(({ key, label, Icon }) => (
                 <button
+                  type="button"
                   key={key}
                   onClick={() => {
                     setView(key);
@@ -67,7 +68,7 @@ export default function Events() {
                   className={`glass-chip flex items-center gap-2 ${view === key ? 'glass-chip-active' : ''}`}
                 >
                   <Icon className="w-4 h-4" />
-                  <span className="hidden sm:inline">{label}</span>
+                  <span className="sr-only sm:not-sr-only">{label}</span>
                 </button>
             ))}
           </div>
@@ -75,6 +76,7 @@ export default function Events() {
           <div className="flex flex-wrap gap-2 justify-center">
             {categories.map((category) => (
               <button
+                type="button"
                 key={category}
                 onClick={() => setFilter(category)}
                 className={`glass-chip ${filter === category ? 'glass-chip-active' : ''}`}
@@ -86,43 +88,43 @@ export default function Events() {
         </div>
       </div>
 
-      <div className="px-4">
-        <div className="max-w-7xl mx-auto">
+      <div className="section-wrap-compact pt-0">
+        <div className="section-inner">
           {view === 'list' && (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            <div className="public-grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
               {filtered.map((event, index) => (
                 <motion.div key={event.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.26, delay: Math.min(index * 0.025, 0.12), ease: 'easeOut' }}>
                   <EventCard event={event} />
                 </motion.div>
               ))}
               {filtered.length === 0 && (
-                <p className="col-span-3 glass-panel py-16 text-center text-white/35">No events found for this category.</p>
+                <p className="glass-panel py-16 text-center text-white/55 md:col-span-2 lg:col-span-3">No events found for this category.</p>
               )}
             </div>
           )}
 
           {view === 'week' && (
-            <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 gap-6 xl:grid-cols-3">
               <div className="xl:col-span-2">
                 <CalendarWeekView events={filtered} currentWeek={currentWeek} setCurrentWeek={setCurrentWeek} onDaySelect={handleDaySelect} />
               </div>
               <div>
                 {selectedDay
                   ? <DayPanel day={selectedDay} events={filtered} onClose={() => setSelectedDay(null)} />
-                  : <div className="glass-panel flex h-full items-center justify-center p-6 text-center text-sm text-white/35">{specularLine}Click a day to see its events</div>}
+                  : <div className="glass-panel flex h-full items-center justify-center p-6 text-center text-sm text-white/55">{specularLine}Click a day to see its events</div>}
               </div>
             </div>
           )}
 
           {view === 'month' && (
-            <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 gap-6 xl:grid-cols-3">
               <div className="xl:col-span-2">
                 <CalendarMonthView events={filtered} selectedDay={selectedDay} onDaySelect={handleDaySelect} />
               </div>
               <div>
                 {selectedDay
                   ? <DayPanel day={selectedDay} events={filtered} onClose={() => setSelectedDay(null)} />
-                  : <div className="glass-panel flex min-h-[200px] h-full items-center justify-center p-6 text-center text-sm text-white/35">{specularLine}Click a day to see its events</div>}
+                  : <div className="glass-panel flex min-h-[200px] h-full items-center justify-center p-6 text-center text-sm text-white/55">{specularLine}Click a day to see its events</div>}
               </div>
             </div>
           )}

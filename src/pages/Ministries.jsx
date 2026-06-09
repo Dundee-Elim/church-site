@@ -39,10 +39,11 @@ export default function Ministries() {
         </div>
       </div>
 
-      <div className="px-4 mb-8">
-        <div className="max-w-7xl mx-auto flex flex-wrap gap-2 justify-center">
+      <div className="section-wrap-compact pb-8">
+        <div className="section-inner flex flex-wrap justify-center gap-2">
           {tags.map((tag) => (
             <button
+              type="button"
               key={tag}
               onClick={() => setActiveTag(tag)}
               className={`glass-chip ${activeTag === tag ? 'glass-chip-active' : ''}`}
@@ -53,20 +54,21 @@ export default function Ministries() {
         </div>
       </div>
 
-      <section className="px-4">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <section className="section-wrap-compact pt-0">
+        <div className="section-inner public-grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
           {visible.map((item, index) => {
             const iconStyle = ministryThemeMap[item.theme] || ministryThemeMap.blue;
             const tagStyle = ministryTagStyles[item.tag] || ministryTagStyles.Discover;
             const Icon = ministryIconMap[item.iconKey] || ministryIconMap.users;
 
             return (
-              <motion.div
+              <motion.button
+                type="button"
                 key={`${item.title}-${index}`}
                 {...fadeUp}
                 transition={{ ...fadeUp.transition, delay: index * 0.04 }}
                 {...cardHover}
-                className="glass-panel flex cursor-pointer flex-col p-7"
+                className="glass-panel focus-ring flex cursor-pointer flex-col p-6 text-left sm:p-7"
                 onClick={() => setSelected(item)}
               >
                 <div className="flex items-start justify-between mb-5">
@@ -81,16 +83,16 @@ export default function Ministries() {
                 <p className="text-white/55 text-sm leading-relaxed flex-1">{item.summary}</p>
                 <ul className="mt-4 space-y-1.5">
                   {item.details.map((detail) => (
-                    <li key={detail} className="flex items-center gap-2 text-white/35 text-xs">
+                    <li key={detail} className="metadata-text flex items-center gap-2">
                       <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${iconStyle.color.replace('text-', 'bg-')}`} />
                       {detail}
                     </li>
                   ))}
                 </ul>
-                <button className={`mt-5 text-xs font-medium ${iconStyle.color} hover:opacity-80 transition-opacity text-left`}>
+                <span className={`mt-5 text-xs font-medium ${iconStyle.color} transition-opacity hover:opacity-80`}>
                   Read more →
-                </button>
-              </motion.div>
+                </span>
+              </motion.button>
             );
           })}
         </div>
@@ -102,7 +104,7 @@ export default function Ministries() {
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.16 }} className="fixed inset-0 z-40" style={{ background: 'rgba(0,0,0,0.72)', backdropFilter: 'blur(6px)' }} onClick={() => setSelected(null)} />
             <motion.div initial={{ opacity: 0, scale: 0.985, y: 8 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.985, y: 8 }} transition={{ duration: 0.18, ease: 'easeOut' }} className="fixed inset-0 z-50 flex items-center justify-center p-4">
               <div className="glass-panel-strong relative max-h-[85vh] w-full max-w-2xl overflow-y-auto p-8">
-                <button onClick={() => setSelected(null)} className="glass-light absolute right-4 top-4 p-2 text-white/40 transition-colors hover:text-white">
+                <button type="button" aria-label="Close ministry details" onClick={() => setSelected(null)} className="glass-light focus-ring absolute right-4 top-4 p-2 text-white/70 transition-colors hover:text-white">
                   <X className="w-4 h-4" />
                 </button>
                 <div className="flex items-center gap-4 mb-6">
@@ -150,11 +152,11 @@ export default function Ministries() {
         )}
       </AnimatePresence>
 
-      <section className="py-16 px-4">
-        <div className="max-w-7xl mx-auto grid grid-cols-2 lg:grid-cols-4 gap-3">
+      <section className="section-wrap">
+        <div className="section-inner grid grid-cols-2 gap-3 lg:grid-cols-4">
           {content.ministries.photoStrip.map((asset, index) => (
-            <div key={`${asset.url}-${index}`} className="glass-panel overflow-hidden aspect-square p-0.5">
-              <img src={resolveMediaSrc(asset)} alt={asset.alt || 'Community'} className="h-full w-full rounded-[1.35rem] object-cover opacity-85 transition-opacity duration-300 hover:opacity-100" />
+            <div key={`${asset.url}-${index}`} className="public-media aspect-square p-0.5">
+              <img src={resolveMediaSrc(asset)} alt={asset.alt || 'Community'} className="h-full w-full object-cover opacity-85 transition-opacity duration-300 hover:opacity-100" />
             </div>
           ))}
         </div>

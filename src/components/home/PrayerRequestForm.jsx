@@ -47,11 +47,11 @@ export default function PrayerRequestForm() {
   };
 
   return (
-    <section className="py-20 px-4">
-      <div className="max-w-7xl mx-auto">
+    <section className="section-wrap-spacious">
+      <div className="section-inner">
         <motion.div
           {...fadeUp}
-          className="glass-panel-strong p-10 relative"
+          className="glass-panel-strong relative p-6 sm:p-10"
           style={{
             boxShadow: '0 1px 0 0 rgba(255,255,255,0.12) inset, 0 24px 80px rgba(0,0,0,0.5)'
           }}>
@@ -65,7 +65,7 @@ export default function PrayerRequestForm() {
               <span className="text-purple-300/70 text-xs uppercase tracking-widest font-medium">{content.home.prayerRequest.eyebrow}</span>
             </div>
             <h2 className="font-display text-3xl sm:text-4xl font-bold text-white mt-3 mb-2">{content.home.prayerRequest.title}</h2>
-            <p className="text-white/50 text-sm mb-8 leading-relaxed">
+            <p className="body-copy mb-8 text-sm">
               {content.home.prayerRequest.description}
             </p>
 
@@ -91,34 +91,34 @@ export default function PrayerRequestForm() {
                   onSubmit={handleSubmit} className="space-y-4">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-white/35 text-xs font-medium mb-2 uppercase tracking-wider">Your Name *</label>
+                      <label htmlFor="prayer-name" className="metadata-text mb-2 block uppercase tracking-wider">Your Name *</label>
                       <input required type="text" value={form.name}
                         onChange={e => setForm({ ...form, name: e.target.value })}
-                        placeholder="First name is fine" className={inputClass} />
+                        id="prayer-name" placeholder="First name is fine" className={inputClass} />
                     </div>
                     <div>
-                      <label className="block text-white/35 text-xs font-medium mb-2 uppercase tracking-wider">Email (optional)</label>
+                      <label htmlFor="prayer-email" className="metadata-text mb-2 block uppercase tracking-wider">Email (optional)</label>
                       <input type="email" value={form.email}
                         onChange={e => setForm({ ...form, email: e.target.value })}
-                        placeholder="For a personal response" className={inputClass} />
+                        id="prayer-email" placeholder="For a personal response" className={inputClass} />
                     </div>
                   </div>
                   <div>
-                    <label className="block text-white/35 text-xs font-medium mb-2 uppercase tracking-wider">Your Prayer Request *</label>
+                    <label htmlFor="prayer-request" className="metadata-text mb-2 block uppercase tracking-wider">Your Prayer Request *</label>
                     <textarea required rows={4} value={form.request}
                       onChange={e => setForm({ ...form, request: e.target.value })}
-                      placeholder="Share what's on your heart..." className={inputClass} />
+                      id="prayer-request" placeholder="Share what's on your heart..." className={inputClass} />
                   </div>
 
-                  <button type="button" onClick={() => setForm({ ...form, is_private: !form.is_private })}
-                    className="glass-inline-panel flex w-full items-center gap-3 px-4 py-3 text-left transition-all"
+                  <button type="button" aria-pressed={form.is_private} onClick={() => setForm({ ...form, is_private: !form.is_private })}
+                    className="glass-inline-panel focus-ring flex w-full items-center gap-3 px-4 py-3 text-left transition-all"
                     style={form.is_private
                       ? { background: 'rgba(168,85,247,0.12)', border: '1px solid rgba(168,85,247,0.3)' }
                       : undefined}>
-                    <Lock className={`w-4 h-4 shrink-0 ${form.is_private ? 'text-purple-400' : 'text-white/30'}`} />
+                    <Lock className={`w-4 h-4 shrink-0 ${form.is_private ? 'text-purple-400' : 'text-white/55'}`} />
                     <div>
                       <div className={`text-sm font-medium ${form.is_private ? 'text-white' : 'text-white/55'}`}>{content.home.prayerRequest.privacyLabel}</div>
-                      <div className="text-xs text-white/30 mt-0.5">{content.home.prayerRequest.privacyDescription}</div>
+                      <div className="metadata-text mt-0.5">{content.home.prayerRequest.privacyDescription}</div>
                     </div>
                     <div className={`ml-auto w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-all ${form.is_private ? 'border-purple-400 bg-purple-400' : 'border-white/20'}`}>
                       {form.is_private && <div className="w-2 h-2 rounded-full bg-white" />}

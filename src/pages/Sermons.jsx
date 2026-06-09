@@ -100,8 +100,8 @@ export default function Sermons() {
         </div>
       </div>
 
-      <div className="mb-6 px-4">
-        <div className="mx-auto max-w-7xl">
+      <div className="section-wrap-compact pb-6">
+        <div className="section-inner">
           <a href={content.settings.links.youtubeUrl} target="_blank" rel="noreferrer" className="group glass-panel block p-4 transition-colors hover:border-red-500/30">
             {specularLine}
             <div className="flex items-center gap-4">
@@ -112,18 +112,19 @@ export default function Sermons() {
                 <div className="text-sm font-semibold text-white">{content.sermons.subscribeCard.title}</div>
                 <div className="text-xs text-white/45">{content.sermons.subscribeCard.description}</div>
               </div>
-              <div className="hidden text-sm text-white/30 sm:block">{content.sermons.subscribeCard.linkLabel} →</div>
+              <div className="hidden text-sm text-white/55 sm:block">{content.sermons.subscribeCard.linkLabel} →</div>
             </div>
           </a>
         </div>
       </div>
 
-      <div className="mb-6 px-4">
-        <div className="mx-auto max-w-7xl">
+      <div className="section-wrap-compact py-0 pb-6">
+        <div className="section-inner">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div className="glass-chip-set">
               {tabs.map(({ key, label, Icon }) => (
                 <button
+                  type="button"
                   key={key}
                   onClick={() => {
                     setActiveTab(key);
@@ -140,8 +141,10 @@ export default function Sermons() {
 
             {activeTab === 'youtube' ? (
               <div className="relative flex-1 sm:max-w-xs">
+                <label htmlFor="sermon-video-search" className="sr-only">Search videos</label>
                 <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/30" />
                 <input
+                  id="sermon-video-search"
                   type="text"
                   placeholder="Search videos..."
                   value={search}
@@ -154,16 +157,20 @@ export default function Sermons() {
             {activeTab === 'audio' ? (
               <div className="flex w-full gap-2 sm:w-auto">
                 <div className="relative flex-1 sm:w-64">
+                  <label htmlFor="sermon-audio-search" className="sr-only">Search audio sermons</label>
                   <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/30" />
                   <input
-                  type="text"
-                  placeholder="Search audio..."
-                  value={search}
-                  onChange={(event) => setSearch(event.target.value)}
-                  className={`${inputClass} pl-10`}
-                />
-              </div>
+                    id="sermon-audio-search"
+                    type="text"
+                    placeholder="Search audio..."
+                    value={search}
+                    onChange={(event) => setSearch(event.target.value)}
+                    className={`${inputClass} pl-10`}
+                  />
+                </div>
               <button
+                type="button"
+                aria-expanded={showFilters}
                 onClick={() => setShowFilters((value) => !value)}
                 className={`glass-chip flex items-center gap-2 ${showFilters || hasActiveAudioFilters ? 'glass-chip-active text-white' : ''}`}
               >
@@ -182,7 +189,7 @@ export default function Sermons() {
                 <div className="mb-4 flex items-center justify-between">
                   <h3 className="text-sm font-medium text-white">Filter audio sermons</h3>
                   {hasActiveAudioFilters ? (
-                    <button onClick={() => { setFilterSeries(''); setFilterSpeaker(''); setFilterDateFrom(''); setFilterDateTo(''); }} className="flex items-center gap-1 text-xs text-white/30 transition-colors hover:text-red-400">
+                    <button type="button" onClick={() => { setFilterSeries(''); setFilterSpeaker(''); setFilterDateFrom(''); setFilterDateTo(''); }} className="focus-ring flex items-center gap-1 text-xs text-white/55 transition-colors hover:text-red-400">
                       <X className="h-3 w-3" />
                       Clear all
                     </button>
@@ -190,21 +197,29 @@ export default function Sermons() {
                 </div>
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
                   <div className="relative">
-                    <select value={filterSeries} onChange={(event) => setFilterSeries(event.target.value)} className={`${inputClass} appearance-none pr-8`}>
+                    <label htmlFor="sermon-filter-series" className="sr-only">Filter by series</label>
+                    <select id="sermon-filter-series" value={filterSeries} onChange={(event) => setFilterSeries(event.target.value)} className={`${inputClass} appearance-none pr-8`}>
                       <option value="" className="bg-slate-900">All Series</option>
                       {allSeries.map((item) => <option key={item} value={item} className="bg-slate-900">{item}</option>)}
                     </select>
                     <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-3 w-3 -translate-y-1/2 text-white/30" />
                   </div>
                   <div className="relative">
-                    <select value={filterSpeaker} onChange={(event) => setFilterSpeaker(event.target.value)} className={`${inputClass} appearance-none pr-8`}>
+                    <label htmlFor="sermon-filter-speaker" className="sr-only">Filter by speaker</label>
+                    <select id="sermon-filter-speaker" value={filterSpeaker} onChange={(event) => setFilterSpeaker(event.target.value)} className={`${inputClass} appearance-none pr-8`}>
                       <option value="" className="bg-slate-900">All Speakers</option>
                       {allSpeakers.map((item) => <option key={item} value={item} className="bg-slate-900">{item}</option>)}
                     </select>
                     <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-3 w-3 -translate-y-1/2 text-white/30" />
                   </div>
-                  <input type="date" value={filterDateFrom} onChange={(event) => setFilterDateFrom(event.target.value)} className={`${inputClass} [color-scheme:dark]`} />
-                  <input type="date" value={filterDateTo} onChange={(event) => setFilterDateTo(event.target.value)} className={`${inputClass} [color-scheme:dark]`} />
+                  <div>
+                    <label htmlFor="sermon-filter-from" className="sr-only">Filter from date</label>
+                    <input id="sermon-filter-from" type="date" value={filterDateFrom} onChange={(event) => setFilterDateFrom(event.target.value)} className={`${inputClass} [color-scheme:dark]`} />
+                  </div>
+                  <div>
+                    <label htmlFor="sermon-filter-to" className="sr-only">Filter to date</label>
+                    <input id="sermon-filter-to" type="date" value={filterDateTo} onChange={(event) => setFilterDateTo(event.target.value)} className={`${inputClass} [color-scheme:dark]`} />
+                  </div>
                 </div>
               </motion.div>
             ) : null}
@@ -212,13 +227,13 @@ export default function Sermons() {
         </div>
       </div>
 
-      <div className="px-4">
-        <div className="mx-auto max-w-7xl">
+      <div className="section-wrap-compact pt-0">
+        <div className="section-inner">
           {activeTab === 'live' ? (
             <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.24, ease: 'easeOut' }}>
               {isLive ? (
                 <div className="glass-panel mb-6 overflow-hidden p-1 glow-blue">
-                  <div className="aspect-video w-full overflow-hidden rounded-[1.4rem]">
+                  <div className="public-media-frame aspect-video w-full overflow-hidden">
                     <iframe className="h-full w-full" src={`https://www.youtube.com/embed/live_stream?channel=${content.settings.links.youtubeChannelId}&autoplay=1`} allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerPolicy="strict-origin-when-cross-origin" allowFullScreen title="Dundee Elim Live" />
                   </div>
                 </div>
@@ -234,7 +249,7 @@ export default function Sermons() {
                   ) : (
                     <>
                       <span className="h-3 w-3 rounded-full bg-white/15" />
-                      <span className="text-sm font-semibold uppercase tracking-wider text-white/40">{content.sermons.live.offlineTitle}</span>
+                      <span className="text-sm font-semibold uppercase tracking-wider text-white/60">{content.sermons.live.offlineTitle}</span>
                     </>
                   )}
                 </div>
@@ -257,11 +272,11 @@ export default function Sermons() {
 
               {selectedVideo ? (
                 <motion.div initial={{ opacity: 0, y: -16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.42 }} className="glass-panel mb-8 overflow-hidden p-1">
-                  <div className="aspect-video overflow-hidden rounded-[1.4rem]">
+                  <div className="public-media-frame aspect-video overflow-hidden">
                     <iframe className="h-full w-full" src={`https://www.youtube.com/embed/${selectedVideo}?autoplay=1`} allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerPolicy="strict-origin-when-cross-origin" allowFullScreen title="Sermon" />
                   </div>
                   <div className="flex justify-end p-4">
-                    <button onClick={() => setSelectedVideo(null)} className="flex items-center gap-1.5 text-sm text-white/30 transition-colors hover:text-white">
+                    <button type="button" onClick={() => setSelectedVideo(null)} className="focus-ring flex items-center gap-1.5 text-sm text-white/55 transition-colors hover:text-white">
                       <X className="h-4 w-4" />
                       Close player
                     </button>
@@ -271,25 +286,26 @@ export default function Sermons() {
 
               {!selectedVideo && filteredVideos.length > 0 ? (
                 <div className="glass-panel mb-8 overflow-hidden p-1">
-                  <div className="aspect-video overflow-hidden rounded-[1.4rem]">
+                  <div className="public-media-frame aspect-video overflow-hidden">
                     <iframe className="h-full w-full" src={`https://www.youtube.com/embed/${filteredVideos[0].id}`} allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerPolicy="strict-origin-when-cross-origin" allowFullScreen title={content.sermons.videoSection.title} />
                   </div>
                 </div>
               ) : null}
 
-              {youtubeFeed.loading ? <p className="py-10 text-center text-white/30">Loading latest videos…</p> : null}
+              {youtubeFeed.loading ? <p className="py-10 text-center text-white/55">Loading latest videos…</p> : null}
               {!youtubeFeed.loading && filteredVideos.length === 0 ? (
-                <p className="py-10 text-center text-white/30">No videos match your search.</p>
+                <p className="py-10 text-center text-white/55">No videos match your search.</p>
               ) : null}
               {!youtubeFeed.loading && filteredVideos.length > 0 ? (
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
                   {filteredVideos.map((video, index) => (
-                    <motion.div
+                    <motion.button
+                      type="button"
                       key={`${video.id}-${index}`}
                       {...fadeUp}
                       transition={{ ...fadeUp.transition, delay: Math.min(index * 0.02, 0.1) }}
                       onClick={() => setSelectedVideo(video.id)}
-                      className="glass-panel group relative cursor-pointer overflow-hidden"
+                      className="glass-panel focus-ring group relative cursor-pointer overflow-hidden text-left"
                     >
                       {specularLine}
                       <div className="relative aspect-video bg-black/40">
@@ -302,12 +318,12 @@ export default function Sermons() {
                       </div>
                       <div className="p-4">
                         <h3 className="mb-2 line-clamp-2 text-sm font-medium text-white">{video.title}</h3>
-                        <div className="flex items-center gap-1 text-xs text-white/40">
+                        <div className="metadata-text flex items-center gap-1">
                           <Calendar className="h-3 w-3" />
                           {video.publishedAt ? new Date(video.publishedAt).toLocaleDateString('en-GB', { dateStyle: 'medium' }) : 'No date'}
                         </div>
                       </div>
-                    </motion.div>
+                    </motion.button>
                   ))}
                 </div>
               ) : null}
@@ -320,7 +336,7 @@ export default function Sermons() {
                 <div className="glass-panel relative p-16 text-center">
                   {specularLine}
                   <Music className="mx-auto mb-4 h-12 w-12 text-white/20" />
-                  <p className="text-lg text-white/40">{audioSermons.length === 0 ? 'No audio sermons yet.' : 'No audio sermons match your filters.'}</p>
+                  <p className="text-lg text-white/60">{audioSermons.length === 0 ? 'No audio sermons yet.' : 'No audio sermons match your filters.'}</p>
                 </div>
               ) : (
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -333,7 +349,7 @@ export default function Sermons() {
                         </div>
                         <div className="min-w-0 flex-1">
                           <h3 className="font-medium text-white leading-snug">{sermon.title}</h3>
-                          <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-white/40">
+                          <div className="metadata-text mt-1 flex flex-wrap items-center gap-2">
                             <span>{sermon.speaker}</span>
                             {sermon.date ? (
                               <span className="flex items-center gap-1">
@@ -345,7 +361,7 @@ export default function Sermons() {
                           {sermon.series ? <span className="mt-1 block text-xs text-blue-400/60">{sermon.series}</span> : null}
                         </div>
                       </div>
-                      {sermon.description ? <p className="line-clamp-3 text-xs leading-relaxed text-white/35">{sermon.description}</p> : null}
+                      {sermon.description ? <p className="line-clamp-3 text-xs leading-relaxed text-white/60">{sermon.description}</p> : null}
                       {sermon.audio_url ? (
                         <div className="mt-auto flex flex-col gap-2">
                           <audio controls className="h-9 w-full" style={{ filter: 'invert(0.8) hue-rotate(180deg)' }}>

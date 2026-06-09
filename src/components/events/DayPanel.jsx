@@ -24,13 +24,13 @@ export default function DayPanel({ day, events, onClose }) {
             <h3 className="font-display text-xl font-bold text-white">
               {format(day, 'EEEE, d MMMM')}
             </h3>
-            <button onClick={onClose} className="glass-light p-1.5 text-white/60 transition-colors hover:text-white">
+            <button type="button" aria-label="Close day panel" onClick={onClose} className="glass-light focus-ring p-1.5 text-white/70 transition-colors hover:text-white">
               <X className="w-4 h-4" />
             </button>
           </div>
 
           {dayEvents.length === 0 ? (
-            <p className="text-white/40 text-sm text-center py-10">No events on this day.</p>
+            <p className="py-10 text-center text-sm text-white/55">No events on this day.</p>
           ) : (
             <div className="space-y-4">
               {dayEvents.map(e => (

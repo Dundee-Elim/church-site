@@ -40,6 +40,10 @@
     @apply border-border outline-ring/50;
   }
 
+  html {
+    scroll-padding-top: 7.25rem;
+  }
+
   body {
     @apply bg-background text-foreground;
     font-family: 'Inter', sans-serif;
@@ -115,8 +119,16 @@
     box-shadow: none !important;
   }
 
+  .public-container {
+    @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8;
+  }
+
+  .public-container-narrow {
+    @apply mx-auto w-full max-w-4xl px-4 sm:px-6 lg:px-8;
+  }
+
   .page-hero {
-    @apply relative overflow-hidden px-4 pt-32 pb-20 sm:pb-24;
+    @apply relative overflow-hidden px-4 pb-16 pt-32 sm:pb-20 sm:pt-36;
   }
 
   .page-hero-media {
@@ -144,23 +156,31 @@
   }
 
   .page-title {
-    @apply mt-4 font-display text-5xl font-bold leading-[0.95] text-white sm:text-6xl lg:text-7xl;
+    @apply mt-4 font-display text-4xl font-bold leading-[0.98] text-white sm:text-5xl lg:text-6xl xl:text-7xl;
   }
 
   .page-description {
-    @apply mx-auto mt-5 max-w-2xl text-base leading-7 text-white/60 sm:text-lg;
+    @apply mx-auto mt-5 max-w-2xl text-base leading-7 text-white/70 sm:text-lg;
   }
 
   .section-wrap {
-    @apply px-4 py-12 sm:py-14;
+    @apply px-4 py-12 sm:px-6 sm:py-16 lg:px-8;
+  }
+
+  .section-wrap-compact {
+    @apply px-4 py-8 sm:px-6 sm:py-10 lg:px-8;
+  }
+
+  .section-wrap-spacious {
+    @apply px-4 py-14 sm:px-6 sm:py-16 lg:px-8 lg:py-20;
   }
 
   .section-inner {
-    @apply mx-auto max-w-7xl;
+    @apply mx-auto w-full max-w-7xl;
   }
 
   .section-inner-narrow {
-    @apply mx-auto max-w-4xl;
+    @apply mx-auto w-full max-w-4xl;
   }
 
   .section-heading {
@@ -172,11 +192,73 @@
   }
 
   .section-title {
-    @apply mt-3 font-display text-3xl font-bold text-white leading-tight sm:text-4xl lg:text-[2.75rem];
+    @apply mt-3 font-display text-3xl font-bold text-white leading-tight sm:text-4xl lg:text-[2.65rem];
   }
 
   .section-copy {
-    @apply mx-auto mt-3 max-w-2xl text-sm leading-7 text-white/60 sm:text-base;
+    @apply mx-auto mt-3 max-w-2xl text-sm leading-7 text-white/70 sm:text-base;
+  }
+
+  .card-title {
+    @apply font-display text-xl font-bold leading-snug text-white;
+  }
+
+  .body-copy {
+    @apply text-sm leading-7 text-white/70 sm:text-base;
+  }
+
+  .metadata-text {
+    @apply text-xs font-medium leading-relaxed text-white/55;
+  }
+
+  .public-card {
+    @apply glass-panel p-6 sm:p-7;
+  }
+
+  .public-card-strong {
+    @apply glass-panel-strong p-6 sm:p-8;
+  }
+
+  .public-media {
+    @apply glass-panel overflow-hidden p-1;
+  }
+
+  .public-media > img,
+  .public-media > iframe,
+  .public-media-frame {
+    border-radius: calc(var(--radius-panel) - 0.3rem);
+  }
+
+  .public-grid {
+    @apply grid gap-4 sm:gap-5;
+  }
+
+  .focus-ring {
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-300/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background;
+  }
+
+  .scroll-fade-x {
+    @apply relative;
+  }
+
+  .scroll-fade-x::after {
+    content: '';
+    position: absolute;
+    inset: 0 0 0 auto;
+    width: 3rem;
+    pointer-events: none;
+    background: linear-gradient(90deg, transparent, rgba(8, 18, 39, 0.9));
+  }
+
+  @media (min-width: 640px) {
+    .scroll-fade-x::after {
+      display: none;
+    }
+  }
+
+  .scroll-hint {
+    @apply flex items-center justify-center gap-2 border-t border-white/10 px-4 py-3 text-center text-[0.72rem] font-medium uppercase tracking-[0.2em] text-blue-200/75 sm:hidden;
+    background: rgba(255,255,255,0.035);
   }
 
   .glass-chip-set {
@@ -185,7 +267,7 @@
   }
 
   .glass-chip {
-    @apply inline-flex items-center justify-center text-sm font-medium text-white/50 transition-all;
+    @apply inline-flex items-center justify-center text-sm font-medium text-white/70 transition-all focus-ring;
     min-height: var(--control-height-compact);
     border-radius: var(--radius-pill);
     padding-inline: 1rem;
@@ -206,7 +288,7 @@
   }
 
   .glass-input-field {
-    @apply w-full text-sm text-white placeholder:text-white/30 focus:outline-none;
+    @apply w-full text-sm text-white placeholder:text-white/35 focus:outline-none;
     min-height: var(--control-height);
     border-radius: var(--radius-soft);
     padding: 0.8rem 1rem;
@@ -244,7 +326,7 @@
   .glass-action-secondary,
   .glass-action-soft,
   .glass-action-danger {
-    @apply inline-flex items-center justify-center gap-2 text-sm transition-all;
+    @apply inline-flex items-center justify-center gap-2 text-sm transition-all focus-ring;
     min-height: var(--control-height);
     border-radius: var(--radius-pill);
     padding-inline: 1.15rem;

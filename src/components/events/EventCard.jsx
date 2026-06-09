@@ -82,7 +82,7 @@ export default function EventCard({ event, compact = false }) {
       <div className="flex items-center gap-2 py-1">
         <div className={`w-2 h-2 rounded-full shrink-0 ${dotClass}`} />
         <span className="text-white/80 text-xs font-medium truncate">{event.title}</span>
-        {event.time && <span className="text-white/40 text-xs shrink-0">{event.time}</span>}
+        {event.time && <span className="metadata-text shrink-0">{event.time}</span>}
       </div>
     );
   }
@@ -105,7 +105,7 @@ export default function EventCard({ event, compact = false }) {
         </div>
         <h3 className="mb-2 font-display text-2xl font-semibold text-white">{event.title}</h3>
         {event.description && (
-          <p className="mb-4 line-clamp-2 text-sm leading-7 text-white/60">{event.description}</p>
+          <p className="body-copy mb-4 line-clamp-2 text-sm">{event.description}</p>
         )}
         <div className="mb-5 space-y-2">
           <div className="flex items-center gap-2 text-white/60 text-sm">

@@ -62,23 +62,23 @@ export default function Navbar() {
   useEffect(() => setIsOpen(false), [location]);
 
   return (
-    <div className="fixed top-0 left-0 right-0 z-50 flex justify-center px-4 pt-4">
+    <div className="fixed top-0 left-0 right-0 z-50 flex justify-center px-4 pt-3 sm:pt-4">
       <motion.nav
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.6, ease: 'easeOut' }}
-        className={`w-full max-w-6xl transition-all duration-500 rounded-[1.9rem] ${
+        className={`w-full max-w-7xl transition-all duration-500 ${
           scrolled
             ? 'glass-panel-strong'
             : 'glass-panel'
         }`}
         style={{ position: 'relative' }}
       >
-        <div className="pr-3 pl-1 sm:pr-5 sm:pl-2">
-          <div className="flex min-h-[5.25rem] items-center justify-between gap-3">
+        <div className="py-1 pl-1 pr-3 sm:py-0 sm:pl-2 sm:pr-5">
+          <div className="flex min-h-[4.35rem] items-center justify-between gap-3 sm:min-h-[5.25rem]">
             {/* Logo */}
             <Link to="/" className="flex shrink-0 items-center gap-2">
-              <img src={resolveMediaSrc(content.settings.branding.logo)} alt={content.settings.siteName} className="h-20 w-20 object-contain sm:h-[5.4rem] sm:w-[5.4rem]" />
+              <img src={resolveMediaSrc(content.settings.branding.logo)} alt={content.settings.siteName} className="h-16 w-16 object-contain sm:h-[5.4rem] sm:w-[5.4rem]" />
               <div className="hidden sm:block -ml-2">
                 <div className="font-display text-[1.08rem] font-bold leading-tight text-white">{content.settings.shortName}</div>
                 <div className="text-[0.64rem] uppercase tracking-[0.28em] text-blue-300/80">{content.settings.tagline}</div>
@@ -86,7 +86,7 @@ export default function Navbar() {
             </Link>
 
             {/* Desktop nav */}
-            <div ref={desktopNavRef} className="relative hidden items-center gap-1 md:flex">
+            <div ref={desktopNavRef} className="relative hidden items-center gap-1 lg:flex">
               {pillStyle ? (
                 <motion.span
                   aria-hidden="true"
@@ -112,7 +112,7 @@ export default function Navbar() {
                       delete linkRefs.current[link.path];
                     }
                   }}
-                  className={`relative inline-flex min-h-[2.55rem] items-center rounded-full px-4 text-sm font-medium transition-colors duration-200 ${
+                  className={`focus-ring relative inline-flex min-h-[2.45rem] items-center rounded-full px-2.5 text-[0.83rem] font-medium transition-colors duration-200 xl:min-h-[2.55rem] xl:px-4 xl:text-sm ${
                     location.pathname === link.path
                       ? 'text-white'
                       : 'text-white/60 hover:text-white'
@@ -125,8 +125,11 @@ export default function Navbar() {
 
             {/* Mobile menu button */}
             <button
+              type="button"
+              aria-label={isOpen ? 'Close navigation menu' : 'Open navigation menu'}
+              aria-expanded={isOpen}
               onClick={() => setIsOpen(!isOpen)}
-              className="glass-light rounded-full p-2.5 transition-colors md:hidden"
+              className="glass-light focus-ring rounded-full p-2.5 transition-colors lg:hidden"
               style={{
                 borderColor: 'rgba(255,255,255,0.14)',
               }}
@@ -144,7 +147,7 @@ export default function Navbar() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -8 }}
               transition={{ duration: 0.18, ease: 'easeOut' }}
-              className="md:hidden overflow-hidden"
+              className="overflow-hidden lg:hidden"
             >
               <div className="space-y-2 px-3 pb-4 pt-2"
                 style={{ borderTop: '1px solid rgba(255,255,255,0.08)' }}>
