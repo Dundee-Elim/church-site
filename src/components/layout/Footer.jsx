@@ -1,11 +1,16 @@
 import { Link } from 'react-router-dom';
 import { MapPin, Clock, Mail, Youtube, Facebook } from 'lucide-react';
 import { useSiteContent } from '@/contexts/SiteContentContext';
-import { resolveMediaSrc } from '@/lib/siteContentUtils';
+import { getGlobalSiteInfo, resolveMediaSrc } from '@/lib/siteContentUtils';
 
 export default function Footer() {
   const { content } = useSiteContent();
+  const globalInfo = getGlobalSiteInfo(content);
   const serviceCard = content.contact.infoCards.find((card) => card.kind === 'service');
+  const serviceItems = [
+    { label: 'Sunday Service', value: globalInfo.sundayServiceTime },
+    ...(globalInfo.communionNote ? [{ label: 'Communion', value: globalInfo.communionNote }] : []),
+  ].filter((item) => item.value) || (serviceCard?.items || []);
 
   return (
     <footer className="relative">
@@ -26,12 +31,12 @@ export default function Footer() {
                 {content.settings.footerDescription}
               </p>
               <div className="mt-6 flex justify-center gap-2 md:justify-start">
-                <a href={content.settings.links.youtubeUrl} target="_blank" rel="noreferrer" aria-label="Dundee Elim on YouTube"
+                <a href={globalInfo.social.youtubeUrl || content.settings.links.youtubeUrl} target="_blank" rel="noreferrer" aria-label="Dundee Elim on YouTube"
                   className="glass-inline-panel glass-icon-badge focus-ring text-white/70 transition-colors hover:text-red-400"
                   style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}>
                   <Youtube className="w-4 h-4" />
                 </a>
-                <a href={content.settings.links.facebookUrl} target="_blank" rel="noreferrer" aria-label="Dundee Elim on Facebook"
+                <a href={globalInfo.social.facebookUrl || content.settings.links.facebookUrl} target="_blank" rel="noreferrer" aria-label="Dundee Elim on Facebook"
                   className="glass-inline-panel glass-icon-badge focus-ring text-white/70 transition-colors hover:text-blue-400"
                   style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}>
                   <Facebook className="w-4 h-4" />
@@ -57,7 +62,7 @@ export default function Footer() {
             <div>
               <h3 className="mb-4 text-xs font-semibold uppercase tracking-[0.22em] text-white/80">Services</h3>
               <div className="space-y-3">
-                {(serviceCard?.items || []).map((item) => (
+                {serviceItems.map((item) => (
                   <div key={item.label} className="glass-inline-panel flex items-start gap-2.5 px-4 py-3">
                     <Clock className="w-4 h-4 text-blue-400/70 mt-0.5 shrink-0" />
                     <div>
@@ -75,12 +80,12 @@ export default function Footer() {
               <div className="space-y-3">
                 <div className="glass-inline-panel flex items-start gap-2.5 px-4 py-3">
                   <MapPin className="w-4 h-4 text-blue-400/70 mt-0.5 shrink-0" />
-                  <div className="text-sm text-white/65">{content.settings.contact.addressShort}</div>
+                  <div className="text-sm text-white/65">{globalInfo.addressShort || content.settings.contact.addressShort}</div>
                 </div>
                 <div className="glass-inline-panel flex items-start gap-2.5 px-4 py-3">
                   <Mail className="w-4 h-4 text-blue-400/70 mt-0.5 shrink-0" />
-                  <a href={`mailto:${content.settings.contact.email}`} className="focus-ring rounded-sm text-sm text-white/65 transition-colors hover:text-blue-300">
-                    {content.settings.contact.email}
+                  <a href={`mailto:${globalInfo.contactEmail || content.settings.contact.email}`} className="focus-ring rounded-sm text-sm text-white/65 transition-colors hover:text-blue-300">
+                    {globalInfo.contactEmail || content.settings.contact.email}
                   </a>
                 </div>
               </div>

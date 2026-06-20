@@ -64,10 +64,9 @@ export const ministryThemeMap = {
 };
 
 export const ministryTagStyles = {
-  Discover: { bg: 'rgba(59,130,246,0.15)', text: 'text-blue-300', border: 'rgba(59,130,246,0.2)' },
-  Community: { bg: 'rgba(34,197,94,0.15)', text: 'text-green-300', border: 'rgba(34,197,94,0.2)' },
-  Children: { bg: 'rgba(234,179,8,0.15)', text: 'text-yellow-300', border: 'rgba(234,179,8,0.2)' },
-  Serve: { bg: 'rgba(168,85,247,0.15)', text: 'text-purple-300', border: 'rgba(168,85,247,0.2)' },
+  'Proclaim Jesus': { bg: 'rgba(59,130,246,0.15)', text: 'text-blue-300', border: 'rgba(59,130,246,0.2)' },
+  'Build Community': { bg: 'rgba(34,197,94,0.15)', text: 'text-green-300', border: 'rgba(34,197,94,0.2)' },
+  'Serve the City': { bg: 'rgba(168,85,247,0.15)', text: 'text-purple-300', border: 'rgba(168,85,247,0.2)' },
 };
 
 export const giveMethodConfig = {

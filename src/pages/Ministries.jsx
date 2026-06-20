@@ -6,7 +6,7 @@ import SEOHead from '@/components/SEOHead';
 import { useSiteContent } from '@/contexts/SiteContentContext';
 import { ministryIconMap, ministryTagStyles, ministryThemeMap } from '@/lib/sitePresentation';
 import { cardHover, fadeUp } from '@/lib/motion';
-import { filterPublishedItems, resolveMediaSrc } from '@/lib/siteContentUtils';
+import { filterPublishedItems, formatPhoneHref, getGlobalSiteInfo, resolveMediaSrc } from '@/lib/siteContentUtils';
 
 const specularLine = (
   <div className="absolute inset-x-0 top-0 h-px" style={{ background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent)' }} />
@@ -14,12 +14,15 @@ const specularLine = (
 
 export default function Ministries() {
   const { content } = useSiteContent();
+  const globalInfo = getGlobalSiteInfo(content);
   const [selected, setSelected] = useState(null);
   const [activeTag, setActiveTag] = useState('All');
 
   const tags = ['All', ...Object.keys(ministryTagStyles)];
   const publishedMinistries = filterPublishedItems(content.ministries.items);
   const visible = activeTag === 'All' ? publishedMinistries : publishedMinistries.filter((item) => item.tag === activeTag);
+  const selectedEmail = selected?.contactEmail || globalInfo.contactEmail;
+  const selectedPhone = selected?.contactPhone || globalInfo.mobileNumberDisplay;
 
   return (
     <div className="pb-20">
@@ -58,7 +61,7 @@ export default function Ministries() {
         <div className="section-inner public-grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
           {visible.map((item, index) => {
             const iconStyle = ministryThemeMap[item.theme] || ministryThemeMap.blue;
-            const tagStyle = ministryTagStyles[item.tag] || ministryTagStyles.Discover;
+            const tagStyle = ministryTagStyles[item.tag] || ministryTagStyles['Proclaim Jesus'];
             const Icon = ministryIconMap[item.iconKey] || ministryIconMap.users;
 
             return (
@@ -116,7 +119,7 @@ export default function Ministries() {
                     })()}
                   </div>
                   <div>
-                    <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${(ministryTagStyles[selected.tag] || ministryTagStyles.Discover).text}`} style={{ background: (ministryTagStyles[selected.tag] || ministryTagStyles.Discover).bg }}>
+                    <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${(ministryTagStyles[selected.tag] || ministryTagStyles['Proclaim Jesus']).text}`} style={{ background: (ministryTagStyles[selected.tag] || ministryTagStyles['Proclaim Jesus']).bg }}>
                       {selected.tag}
                     </span>
                     <h2 className="font-display text-2xl font-bold text-white mt-1">{selected.title}</h2>
@@ -130,16 +133,16 @@ export default function Ministries() {
                       <ExternalLink className="w-3.5 h-3.5" />
                     </a>
                   )}
-                  {selected.contactEmail && (
-                    <a href={`mailto:${selected.contactEmail}`} className="glass-action-soft px-4 text-sm font-medium text-blue-300 hover:text-white">
+                  {selectedEmail && (
+                    <a href={`mailto:${selectedEmail}`} className="glass-action-soft px-4 text-sm font-medium text-blue-300 hover:text-white">
                       <Mail className="w-3.5 h-3.5" />
-                      {selected.contactEmail}
+                      {selectedEmail}
                     </a>
                   )}
-                  {selected.contactPhone && (
-                    <a href={`tel:${selected.contactPhone.replace(/\s/g, '')}`} className="glass-action-soft px-4 text-sm font-medium text-blue-300 hover:text-white">
+                  {selectedPhone && (
+                    <a href={`tel:${formatPhoneHref(selectedPhone)}`} className="glass-action-soft px-4 text-sm font-medium text-blue-300 hover:text-white">
                       <Phone className="w-3.5 h-3.5" />
-                      {selected.contactPhone}
+                      {selectedPhone}
                     </a>
                   )}
                   <Link to="/contact" className="glass-action-secondary px-4 text-sm font-medium text-white/70 hover:text-white">

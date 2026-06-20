@@ -14,9 +14,9 @@ import { cn } from '@/lib/utils';
 const WEBSITE_SECTIONS = [
   {
     key: 'global',
-    label: 'Global',
-    title: 'Global Settings',
-    subtitle: 'Church details, branding, external links, and default SEO.',
+    label: 'Site Information',
+    title: 'Global Site Information',
+    subtitle: 'Central church details, contact, giving, parking, branding, links, and default SEO.',
   },
   {
     key: 'home',
@@ -178,11 +178,67 @@ function GlobalEditor({ admin }) {
         <AreaField label="Footer Description" value={settings.footerDescription} onChange={(value) => update(['footerDescription'], value)} rows={3} />
       </EditorSection>
 
-      <EditorSection title="Contact Details" description="Public contact information for the footer and contact page.">
+      <EditorSection title="Global Site Information" description="Central source of truth for contact, service, safeguarding, giving, and parking details used across the public website.">
+        <div className="grid gap-4 md:grid-cols-2">
+          <Field label="Church Name" value={settings.siteInfo.churchName} onChange={(value) => update(['siteInfo', 'churchName'], value)} />
+          <Field label="Main Contact Email" value={settings.siteInfo.contactEmail} onChange={(value) => update(['siteInfo', 'contactEmail'], value)} />
+          <Field label="Main Mobile Number" value={settings.siteInfo.mobileNumberDisplay} onChange={(value) => update(['siteInfo', 'mobileNumberDisplay'], value)} placeholder="07950 959525" />
+          <Field label="Mobile Link Value" value={settings.siteInfo.mobileNumberHref} onChange={(value) => update(['siteInfo', 'mobileNumberHref'], value)} placeholder="07950959525" />
+          <Field label="Safeguarding Email" value={settings.siteInfo.safeguardingEmail} onChange={(value) => update(['siteInfo', 'safeguardingEmail'], value)} placeholder="safeguarding@dundee-elim.org.uk" />
+          <Field label="Sunday Service Time" value={settings.siteInfo.sundayServiceTime} onChange={(value) => update(['siteInfo', 'sundayServiceTime'], value)} placeholder="10:30 AM" />
+          <Field label="Address Line 1" value={settings.siteInfo.addressLine1} onChange={(value) => update(['siteInfo', 'addressLine1'], value)} />
+          <Field label="Address Line 2" value={settings.siteInfo.addressLine2} onChange={(value) => update(['siteInfo', 'addressLine2'], value)} />
+          <Field label="Short Address" value={settings.siteInfo.addressShort} onChange={(value) => update(['siteInfo', 'addressShort'], value)} />
+        </div>
+        <AreaField label="Communion Note" value={settings.siteInfo.communionNote} onChange={(value) => update(['siteInfo', 'communionNote'], value)} rows={2} />
+      </EditorSection>
+
+      <EditorSection title="Giving Information" description="Shared giving details used by the Give page and calls-to-action.">
+        <div className="grid gap-4 md:grid-cols-2">
+          <Field label="Give Online Label" value={settings.siteInfo.giving.onlineGivingLabel} onChange={(value) => update(['siteInfo', 'giving', 'onlineGivingLabel'], value)} />
+          <Field label="Give Online URL" value={settings.siteInfo.giving.onlineGivingUrl} onChange={(value) => update(['siteInfo', 'giving', 'onlineGivingUrl'], value)} placeholder="https://..." />
+          <Field label="Standing Order Title" value={settings.siteInfo.giving.standingOrderTitle} onChange={(value) => update(['siteInfo', 'giving', 'standingOrderTitle'], value)} />
+          <Field label="Bank Transfer Title" value={settings.siteInfo.giving.bankTransferTitle} onChange={(value) => update(['siteInfo', 'giving', 'bankTransferTitle'], value)} />
+          <Field label="Bank Name" value={settings.siteInfo.giving.bankName} onChange={(value) => update(['siteInfo', 'giving', 'bankName'], value)} />
+          <Field label="Account Name" value={settings.siteInfo.giving.accountName} onChange={(value) => update(['siteInfo', 'giving', 'accountName'], value)} />
+          <Field label="Sort Code" value={settings.siteInfo.giving.sortCode} onChange={(value) => update(['siteInfo', 'giving', 'sortCode'], value)} />
+          <Field label="Account Number" value={settings.siteInfo.giving.accountNumber} onChange={(value) => update(['siteInfo', 'giving', 'accountNumber'], value)} />
+          <Field label="IBAN" value={settings.siteInfo.giving.iban} onChange={(value) => update(['siteInfo', 'giving', 'iban'], value)} />
+          <Field label="BIC" value={settings.siteInfo.giving.bic} onChange={(value) => update(['siteInfo', 'giving', 'bic'], value)} />
+        </div>
+        <AreaField label="Bank Reference Note" value={settings.siteInfo.giving.referenceNote} onChange={(value) => update(['siteInfo', 'giving', 'referenceNote'], value)} rows={2} />
+        <AreaField label="QR Code Note" value={settings.siteInfo.giving.qrCodeNote} onChange={(value) => update(['siteInfo', 'giving', 'qrCodeNote'], value)} rows={2} />
+        <ImageUpload
+          label="Giving QR Code Image"
+          value={settings.siteInfo.giving.qrCodeImage}
+          busy={admin.uploadingPath === 'settings.siteInfo.giving.qrCodeImage'}
+          onUpload={(file) => admin.replaceMediaAtPath(['settings', 'siteInfo', 'giving', 'qrCodeImage'], file)}
+          onChange={(value) => update(['siteInfo', 'giving', 'qrCodeImage'], value)}
+        />
+      </EditorSection>
+
+      <EditorSection title="Parking Information" description="Shared parking details for visiting information.">
+        <div className="grid gap-4 md:grid-cols-2">
+          <Field label="Bell Street Car Park Name" value={settings.siteInfo.parking.bellStreetCarParkName} onChange={(value) => update(['siteInfo', 'parking', 'bellStreetCarParkName'], value)} />
+          <Field label="Bell Street Car Park Map URL" value={settings.siteInfo.parking.bellStreetCarParkMapUrl} onChange={(value) => update(['siteInfo', 'parking', 'bellStreetCarParkMapUrl'], value)} placeholder="https://maps.google.com/..." />
+          <Field label="Parking Charges URL" value={settings.siteInfo.parking.parkingChargesUrl} onChange={(value) => update(['siteInfo', 'parking', 'parkingChargesUrl'], value)} placeholder="https://www.dundeecity.gov.uk/..." />
+        </div>
+        <AreaField label="Parking Note" value={settings.siteInfo.parking.parkingNote} onChange={(value) => update(['siteInfo', 'parking', 'parkingNote'], value)} rows={3} />
+      </EditorSection>
+
+      <EditorSection title="Social Media" description="Social links used in shared components.">
+        <div className="grid gap-4 md:grid-cols-2">
+          <Field label="YouTube URL" value={settings.siteInfo.social.youtubeUrl} onChange={(value) => update(['siteInfo', 'social', 'youtubeUrl'], value)} placeholder="https://youtube.com/..." />
+          <Field label="Facebook URL" value={settings.siteInfo.social.facebookUrl} onChange={(value) => update(['siteInfo', 'social', 'facebookUrl'], value)} placeholder="https://facebook.com/..." />
+          <Field label="Instagram URL" value={settings.siteInfo.social.instagramUrl} onChange={(value) => update(['siteInfo', 'social', 'instagramUrl'], value)} placeholder="https://instagram.com/..." />
+        </div>
+      </EditorSection>
+
+      <EditorSection title="Legacy Contact (Compatibility)" description="Older fields kept for compatibility. Site now reads from Global Site Information.">
         <div className="grid gap-4 md:grid-cols-2">
           <Field label="Email" value={settings.contact.email} onChange={(value) => update(['contact', 'email'], value)} />
           <Field label="Phone Number" value={settings.contact.phoneDisplay} onChange={(value) => update(['contact', 'phoneDisplay'], value)} />
-          <Field label="Phone Link Value" value={settings.contact.phoneHref} onChange={(value) => update(['contact', 'phoneHref'], value)} placeholder="01382226020" />
+          <Field label="Phone Link Value" value={settings.contact.phoneHref} onChange={(value) => update(['contact', 'phoneHref'], value)} placeholder="07950959525" />
           <Field label="Address Line 1" value={settings.contact.addressLine1} onChange={(value) => update(['contact', 'addressLine1'], value)} />
           <Field label="Address Line 2" value={settings.contact.addressLine2} onChange={(value) => update(['contact', 'addressLine2'], value)} />
           <Field label="Short Address" value={settings.contact.addressShort} onChange={(value) => update(['contact', 'addressShort'], value)} />

@@ -15,14 +15,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 
-const TAG_OPTIONS = ['Discover', 'Community', 'Children', 'Serve'];
+const TAG_OPTIONS = ['Proclaim Jesus', 'Build Community', 'Serve the City'];
 const ICON_OPTIONS = ['heart', 'users', 'zap', 'star', 'church', 'book-open', 'utensils-crossed', 'baby', 'music'];
 const THEME_OPTIONS = ['red', 'orange', 'blue', 'green', 'pink', 'indigo', 'amber', 'yellow', 'purple'];
 
 const EMPTY_FORM = {
   id: '',
   title: '',
-  tag: 'Discover',
+  tag: 'Proclaim Jesus',
   summary: '',
   body: '',
   detailsText: '',
@@ -35,6 +35,20 @@ const EMPTY_FORM = {
   status: 'draft',
   publishedAt: '',
 };
+
+function normalizeMinistryTag(tag) {
+  if (tag === 'Discover' || tag === 'Children') {
+    return 'Proclaim Jesus';
+  }
+  if (tag === 'Community') {
+    return 'Build Community';
+  }
+  if (tag === 'Serve') {
+    return 'Serve the City';
+  }
+
+  return TAG_OPTIONS.includes(tag) ? tag : 'Proclaim Jesus';
+}
 
 export default function AdminMinistriesPage() {
   const admin = useAdminPortal();
@@ -63,6 +77,7 @@ export default function AdminMinistriesPage() {
     setForm(cloneValue({
       ...EMPTY_FORM,
       ...ministry,
+      tag: normalizeMinistryTag(ministry.tag),
       detailsText: (ministry.details || []).join('\n'),
     }));
     setOpen(true);

@@ -5,12 +5,14 @@ import { useSiteContent } from '@/contexts/SiteContentContext';
 import { openMailto } from '@/lib/mailto';
 import { createPrayerSubmission } from '@/lib/siteContentApi';
 import { isSupabaseConfigured } from '@/lib/supabaseClient';
+import { getGlobalSiteInfo } from '@/lib/siteContentUtils';
 import { fadeUp, subtleTap } from '@/lib/motion';
 
 const inputClass = "glass-input-field";
 
 export default function PrayerRequestForm() {
   const { content } = useSiteContent();
+  const globalInfo = getGlobalSiteInfo(content);
   const [form, setForm] = useState({ name: '', email: '', request: '', is_private: false });
   // Honeypot: kept empty by real users; bots tend to fill every field.
   const [botField, setBotField] = useState('');
@@ -35,7 +37,7 @@ export default function PrayerRequestForm() {
         await createPrayerSubmission(form);
       } else {
         openMailto({
-          to: content.settings.contact.email,
+          to: globalInfo.contactEmail || content.settings.contact.email,
           subject: form.is_private ? 'Private prayer request from website' : 'Prayer request from website',
           body: [
             `Name: ${form.name}`,

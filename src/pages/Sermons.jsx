@@ -3,7 +3,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { Calendar, ChevronDown, Download, Filter, Music, Play, Radio, Search, X, Youtube } from 'lucide-react';
 import SEOHead from '@/components/SEOHead';
 import { useSiteContent } from '@/contexts/SiteContentContext';
-import { filterPublishedItems, resolveMediaSrc } from '@/lib/siteContentUtils';
+import { filterPublishedItems, getGlobalSiteInfo, resolveMediaSrc } from '@/lib/siteContentUtils';
 import { fadeUp } from '@/lib/motion';
 import { normalizeSnapshotVideoSermons, useYoutubeSermons } from '@/lib/youtubeSermons';
 
@@ -19,6 +19,8 @@ function sortByDateDesc(left, right) {
 
 export default function Sermons() {
   const { content } = useSiteContent();
+  const globalInfo = getGlobalSiteInfo(content);
+  const youtubeUrl = globalInfo.social.youtubeUrl || content.settings.links.youtubeUrl;
   const embedOrigin = typeof window !== 'undefined' ? encodeURIComponent(window.location.origin) : '';
   const [activeTab, setActiveTab] = useState('youtube');
   const [search, setSearch] = useState('');
@@ -102,7 +104,7 @@ export default function Sermons() {
 
       <div className="section-wrap-compact pb-6">
         <div className="section-inner">
-          <a href={content.settings.links.youtubeUrl} target="_blank" rel="noreferrer" className="group glass-panel block p-4 transition-colors hover:border-red-500/30">
+          <a href={youtubeUrl} target="_blank" rel="noreferrer" className="group glass-panel block p-4 transition-colors hover:border-red-500/30">
             {specularLine}
             <div className="flex items-center gap-4">
               <div className="glass-icon-badge" style={{ background: 'rgba(239,68,68,0.12)' }}>
@@ -254,7 +256,7 @@ export default function Sermons() {
                   )}
                 </div>
                 <p className="text-sm text-white/50">{isLive ? content.sermons.live.liveDescription : content.sermons.live.offlineDescription}</p>
-                <a href={content.settings.links.youtubeUrl} target="_blank" rel="noreferrer" className="glass-action-soft mt-4 inline-flex px-5 text-sm font-medium text-red-300 hover:text-white" style={{ background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.2)' }}>
+                <a href={youtubeUrl} target="_blank" rel="noreferrer" className="glass-action-soft mt-4 inline-flex px-5 text-sm font-medium text-red-300 hover:text-white" style={{ background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.2)' }}>
                   <Youtube className="h-4 w-4" />
                   {content.sermons.live.buttonLabel}
                 </a>

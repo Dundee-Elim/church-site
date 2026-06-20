@@ -6,7 +6,7 @@ import SEOHead from '@/components/SEOHead';
 import PrayerRequestForm from '@/components/home/PrayerRequestForm';
 import { useSiteContent } from '@/contexts/SiteContentContext';
 import { cardHover, fadeLeft, fadeRight, fadeUp, subtleTap } from '@/lib/motion';
-import { resolveMediaSrc } from '@/lib/siteContentUtils';
+import { getGlobalSiteInfo, resolveMediaSrc } from '@/lib/siteContentUtils';
 import { beliefConfig, quickInfoConfig } from '@/lib/sitePresentation';
 import { normalizeSnapshotVideoSermons, useYoutubeSermons } from '@/lib/youtubeSermons';
 
@@ -52,32 +52,51 @@ function HeroSlideshow({ slides }) {
 
 export default function Home() {
   const { content } = useSiteContent();
+  const globalInfo = getGlobalSiteInfo(content);
   const youtubeFeed = useYoutubeSermons(content.settings.links.youtubeChannelId);
   const fallbackVideos = normalizeSnapshotVideoSermons(content.sermons.videoSermons);
   const latestVideoId = youtubeFeed.videos[0]?.id || fallbackVideos[0]?.id || null;
   const trustPoints = [
     {
       title: content.home.hero.serviceBadgeLabel,
-      value: `${content.home.hero.serviceBadgeDay} · ${content.home.hero.serviceBadgeTime}`,
+      value: `${content.home.hero.serviceBadgeDay} · ${globalInfo.sundayServiceTime || content.home.hero.serviceBadgeTime}`,
       Icon: Play,
       bg: 'rgba(96,165,250,0.14)',
       color: 'text-blue-200',
     },
     {
       title: 'Find us',
-      value: content.settings.contact.addressShort,
+      value: globalInfo.addressShort || content.settings.contact.addressShort,
       Icon: MapPin,
       bg: 'rgba(56,189,248,0.12)',
       color: 'text-cyan-200',
     },
     {
       title: 'Get in touch',
-      value: content.settings.contact.email,
+      value: globalInfo.contactEmail || content.settings.contact.email,
       Icon: Mail,
       bg: 'rgba(167,139,250,0.14)',
       color: 'text-violet-200',
     },
   ];
+  const quickInfoItems = (content.home.quickInfo.items || []).map((item) => {
+    if (item.kind === 'service') {
+      return {
+        ...item,
+        sub: `${globalInfo.sundayServiceTime || item.sub}`,
+      };
+    }
+
+    if (item.kind === 'location') {
+      return {
+        ...item,
+        title: globalInfo.addressLine1 || item.title,
+        sub: globalInfo.addressLine2 || item.sub,
+      };
+    }
+
+    return item;
+  });
 
   return (
     <div className="overflow-x-hidden">
@@ -150,7 +169,7 @@ export default function Home() {
 
       <section className="section-wrap-compact">
         <div className="mx-auto grid max-w-5xl grid-cols-1 gap-4 sm:grid-cols-3">
-          {content.home.quickInfo.items.map((item, index) => {
+          {quickInfoItems.map((item, index) => {
             const style = quickInfoConfig[item.kind] || quickInfoConfig.service;
             const Icon = style.Icon;
 
@@ -193,7 +212,7 @@ export default function Home() {
                 Proclaim · Build · Serve
               </h2>
               <p className="mx-auto mt-5 max-w-2xl text-base font-medium leading-8 text-white/76 sm:text-lg sm:leading-9">
-                Proclaim Christ. Build community. Serve our city.
+                Proclaim Jesus. Build Community. Serve the City.
               </p>
               <Link to="/about" className="focus-ring mt-7 inline-flex rounded-full text-sm font-semibold text-cyan-100 transition-colors hover:text-white">
                 Our vision and mission
@@ -333,7 +352,7 @@ export default function Home() {
                 <h2 className="section-title mt-1 text-3xl">{content.home.media.title}</h2>
               </div>
               <a
-                href={content.settings.links.youtubeUrl}
+                href={globalInfo.social.youtubeUrl || content.settings.links.youtubeUrl}
                 target="_blank"
                 rel="noreferrer"
                 className="focus-ring hidden items-center gap-1.5 rounded-full text-sm text-white/55 transition-colors hover:text-red-400 sm:flex"

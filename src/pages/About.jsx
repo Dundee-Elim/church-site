@@ -2,7 +2,7 @@ import { motion } from 'framer-motion';
 import SEOHead from '@/components/SEOHead';
 import { useSiteContent } from '@/contexts/SiteContentContext';
 import { fadeRight, fadeUp, subtleTap } from '@/lib/motion';
-import { resolveMediaSrc } from '@/lib/siteContentUtils';
+import { getGlobalSiteInfo, resolveMediaSrc } from '@/lib/siteContentUtils';
 import { aboutTravelConfig } from '@/lib/sitePresentation';
 
 const specularLine = (
@@ -10,13 +10,37 @@ const specularLine = (
 );
 
 const missionPillars = [
-  'Proclaim Christ',
-  'Build community',
-  'Serve our city',
+  'Proclaim Jesus',
+  'Build Community',
+  'Serve the City',
 ];
 
 export default function About() {
   const { content } = useSiteContent();
+  const globalInfo = getGlobalSiteInfo(content);
+  const gettingHereCards = (content.about.gettingHere.cards || []).map((card) => {
+    if (card.kind === 'address') {
+      return {
+        ...card,
+        description: [globalInfo.addressLine1, globalInfo.addressLine2].filter(Boolean).join('\n') || card.description,
+        linkUrl: content.settings.links.mapsUrl || card.linkUrl,
+      };
+    }
+
+    if (card.kind === 'car') {
+      return {
+        ...card,
+        description: [
+          globalInfo.parking.parkingNote || card.description,
+          `${globalInfo.parking.bellStreetCarParkName}: nearby city-centre paid parking.`,
+        ].filter(Boolean).join('\n\n'),
+        linkLabel: globalInfo.parking.bellStreetCarParkName || card.linkLabel,
+        linkUrl: globalInfo.parking.bellStreetCarParkMapUrl || card.linkUrl,
+      };
+    }
+
+    return card;
+  });
 
   return (
     <div className="pb-20">
@@ -118,7 +142,7 @@ export default function About() {
           <div className="glass-panel mt-5 p-6">
             {specularLine}
             <p className="body-copy text-center text-sm whitespace-pre-line">
-              <span className="text-blue-300 font-medium">Note:</span> {content.about.sundayExpectations.note}
+              <span className="text-blue-300 font-medium">Note:</span> {[globalInfo.communionNote, content.about.sundayExpectations.note].filter(Boolean).join(' ')}
             </p>
           </div>
         </div>
@@ -130,7 +154,7 @@ export default function About() {
             <h2 className="section-title">{content.about.gettingHere.title}</h2>
           </div>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 mb-5">
-            {content.about.gettingHere.cards.map((card) => {
+            {gettingHereCards.map((card) => {
               const style = aboutTravelConfig[card.kind] || aboutTravelConfig.address;
               const Icon = style.Icon;
 
@@ -151,6 +175,19 @@ export default function About() {
               );
             })}
           </div>
+          {globalInfo.parking.parkingChargesUrl && (
+            <div className="mb-5 text-center">
+              <motion.a
+                {...subtleTap}
+                href={globalInfo.parking.parkingChargesUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="glass-action-soft inline-flex px-5 text-sm text-blue-300 hover:text-white"
+              >
+                Dundee City Council parking charges →
+              </motion.a>
+            </div>
+          )}
           <motion.div {...fadeUp} className="public-media">
             <iframe
               src={content.about.gettingHere.mapEmbedUrl || content.settings.links.mapsEmbedUrl}

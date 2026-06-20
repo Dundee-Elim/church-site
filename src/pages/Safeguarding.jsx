@@ -3,7 +3,7 @@ import { ExternalLink, ShieldCheck } from 'lucide-react';
 import SEOHead from '@/components/SEOHead';
 import { useSiteContent } from '@/contexts/SiteContentContext';
 import { fadeUp } from '@/lib/motion';
-import { resolveMediaSrc } from '@/lib/siteContentUtils';
+import { getGlobalSiteInfo, resolveMediaSrc } from '@/lib/siteContentUtils';
 import { safeguardingActionStyles, safeguardingResourceConfig } from '@/lib/sitePresentation';
 
 const specularLine = (
@@ -12,6 +12,7 @@ const specularLine = (
 
 export default function Safeguarding() {
   const { content } = useSiteContent();
+  const globalInfo = getGlobalSiteInfo(content);
 
   return (
     <div className="pb-20">
@@ -89,7 +90,7 @@ export default function Safeguarding() {
             {specularLine}
             <h3 className="text-white font-semibold text-lg mb-2">{content.safeguarding.contact.title}</h3>
             <p className="body-copy mb-5 text-sm">{content.safeguarding.contact.description}</p>
-            <a href={`mailto:${content.settings.contact.email}`} className="glass-action-soft inline-flex px-5 text-sm font-medium text-blue-300 hover:text-white">
+            <a href={`mailto:${globalInfo.safeguardingEmail || globalInfo.contactEmail || content.settings.contact.email}`} className="glass-action-soft inline-flex px-5 text-sm font-medium text-blue-300 hover:text-white">
               {content.safeguarding.contact.buttonLabel}
             </a>
           </div>

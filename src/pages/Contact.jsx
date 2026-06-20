@@ -8,7 +8,7 @@ import { fadeLeft, fadeRight, subtleTap } from '@/lib/motion';
 import { createContactSubmission } from '@/lib/siteContentApi';
 import { openMailto } from '@/lib/mailto';
 import { isSupabaseConfigured } from '@/lib/supabaseClient';
-import { formatPhoneHref, resolveMediaSrc } from '@/lib/siteContentUtils';
+import { formatPhoneHref, getGlobalSiteInfo, resolveMediaSrc } from '@/lib/siteContentUtils';
 
 const specularLine = (
   <div className="absolute inset-x-0 top-0 h-px" style={{ background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent)' }} />
@@ -18,6 +18,41 @@ const inputClass = 'glass-input-field';
 
 export default function Contact() {
   const { content } = useSiteContent();
+  const globalInfo = getGlobalSiteInfo(content);
+  const serviceCard = content.contact.infoCards.find((card) => card.kind === 'service');
+  const contactCards = [
+    {
+      kind: 'address',
+      title: 'Our Address',
+      descriptionLines: [globalInfo.addressLine1, globalInfo.addressLine2, 'Scotland, UK'].filter(Boolean),
+      items: [],
+      linkLabel: 'Get Directions',
+      linkUrl: content.settings.links.mapsUrl,
+    },
+    {
+      kind: 'contact',
+      title: 'Email & Phone',
+      descriptionLines: [],
+      items: [
+        { label: 'Email', value: globalInfo.contactEmail || content.settings.contact.email },
+        { label: 'Phone', value: globalInfo.mobileNumberDisplay || content.settings.contact.phoneDisplay },
+      ].filter((item) => item.value),
+      linkLabel: '',
+      linkUrl: '',
+    },
+    {
+      kind: 'service',
+      title: 'Service Times',
+      descriptionLines: [],
+      items: [
+        { label: 'Sunday Service', value: globalInfo.sundayServiceTime },
+        ...(globalInfo.communionNote ? [{ label: 'Communion', value: globalInfo.communionNote }] : []),
+        ...(serviceCard?.items || []).filter((item) => !['Sunday Service', 'Communion'].includes(item.label)),
+      ],
+      linkLabel: '',
+      linkUrl: '',
+    },
+  ];
   const [form, setForm] = useState({ name: '', email: '', phone: '', subject: '', message: '' });
   // Honeypot: kept empty by real users; bots tend to fill every field.
   const [botField, setBotField] = useState('');
@@ -42,7 +77,7 @@ export default function Contact() {
         await createContactSubmission(form);
       } else {
         openMailto({
-          to: content.settings.contact.email,
+          to: globalInfo.contactEmail || content.settings.contact.email,
           subject: form.subject ? `Website contact: ${form.subject}` : `Website contact from ${form.name}`,
           body: [
             `Name: ${form.name}`,
@@ -83,7 +118,7 @@ export default function Contact() {
       <section className="section-wrap">
         <div className="section-inner grid grid-cols-1 gap-8 lg:grid-cols-5 lg:gap-10">
           <div className="lg:col-span-2 space-y-4">
-            {content.contact.infoCards.map((card, index) => {
+            {contactCards.map((card, index) => {
               const style = contactInfoConfig[card.kind] || contactInfoConfig.address;
               const Icon = style.Icon;
 

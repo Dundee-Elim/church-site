@@ -4,7 +4,7 @@ import SEOHead from '@/components/SEOHead';
 import { useSiteContent } from '@/contexts/SiteContentContext';
 import { giveMethodConfig } from '@/lib/sitePresentation';
 import { fadeUp, subtleTap } from '@/lib/motion';
-import { formatPhoneHref, resolveMediaSrc } from '@/lib/siteContentUtils';
+import { formatPhoneHref, getGlobalSiteInfo, resolveMediaSrc } from '@/lib/siteContentUtils';
 
 const specularLine = (
   <div className="absolute inset-x-0 top-0 h-px" style={{ background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent)' }} />
@@ -12,6 +12,34 @@ const specularLine = (
 
 export default function Give() {
   const { content } = useSiteContent();
+  const globalInfo = getGlobalSiteInfo(content);
+  const giveMethods = (content.give.methods || []).map((method) => {
+    if (method.kind === 'online') {
+      return {
+        ...method,
+        ctaLabel: globalInfo.giving.onlineGivingLabel || method.ctaLabel,
+        ctaUrl: globalInfo.giving.onlineGivingUrl || method.ctaUrl,
+      };
+    }
+
+    if (method.kind === 'bank') {
+      return {
+        ...method,
+        title: method.title || `${globalInfo.giving.standingOrderTitle} / ${globalInfo.giving.bankTransferTitle}`,
+        contactEmail: globalInfo.contactEmail || method.contactEmail,
+        contactPhone: globalInfo.mobileNumberDisplay || method.contactPhone,
+      };
+    }
+
+    if (method.kind === 'inperson') {
+      return {
+        ...method,
+        addressLines: [globalInfo.churchName, globalInfo.addressLine1, globalInfo.addressLine2].filter(Boolean),
+      };
+    }
+
+    return method;
+  });
 
   return (
     <div className="pb-20">
@@ -49,7 +77,7 @@ export default function Give() {
         <div className="section-inner">
           <h2 className="section-title mb-8 text-center sm:mb-10">{content.give.methodsTitle}</h2>
           <div className="public-grid grid-cols-1 md:grid-cols-3">
-            {content.give.methods.map((method, index) => {
+            {giveMethods.map((method, index) => {
               const style = giveMethodConfig[method.kind] || giveMethodConfig.online;
               const Icon = style.Icon;
 
@@ -66,6 +94,22 @@ export default function Give() {
                       <ArrowRight className="w-4 h-4" />
                     </motion.a>
                   )}
+                  {method.kind === 'online' && (
+                    <div className="glass-inline-panel mt-4 p-4 text-sm">
+                      {globalInfo.giving.qrCodeImage?.url || globalInfo.giving.qrCodeImage?.path ? (
+                        <img
+                          src={resolveMediaSrc(globalInfo.giving.qrCodeImage)}
+                          alt={globalInfo.giving.qrCodeImage.alt || 'Giving QR code'}
+                          className="mx-auto mb-3 h-36 w-36 rounded-lg object-contain"
+                        />
+                      ) : (
+                        <div className="mx-auto mb-3 flex h-36 w-36 items-center justify-center rounded-lg border border-dashed border-white/20 text-center text-xs text-white/45">
+                          QR Code Placeholder
+                        </div>
+                      )}
+                      <p className="text-white/55">{globalInfo.giving.qrCodeNote}</p>
+                    </div>
+                  )}
                   {method.kind === 'bank' && (
                     <div className="glass-inline-panel mb-4 space-y-2 p-4 text-sm">
                       {method.contactEmail && (
@@ -80,6 +124,13 @@ export default function Give() {
                           <a href={`tel:${formatPhoneHref(method.contactPhone)}`} className="hover:text-blue-300 transition-colors">{method.contactPhone}</a>
                         </div>
                       )}
+                      {globalInfo.giving.bankName && <div className="text-white/60">Bank: <span className="text-white/80">{globalInfo.giving.bankName}</span></div>}
+                      {globalInfo.giving.accountName && <div className="text-white/60">Account name: <span className="text-white/80">{globalInfo.giving.accountName}</span></div>}
+                      {globalInfo.giving.sortCode && <div className="text-white/60">Sort code: <span className="text-white/80">{globalInfo.giving.sortCode}</span></div>}
+                      {globalInfo.giving.accountNumber && <div className="text-white/60">Account number: <span className="text-white/80">{globalInfo.giving.accountNumber}</span></div>}
+                      {globalInfo.giving.iban && <div className="text-white/60">IBAN: <span className="text-white/80">{globalInfo.giving.iban}</span></div>}
+                      {globalInfo.giving.bic && <div className="text-white/60">BIC: <span className="text-white/80">{globalInfo.giving.bic}</span></div>}
+                      {globalInfo.giving.referenceNote && <div className="text-white/55 text-xs mt-2">{globalInfo.giving.referenceNote}</div>}
                     </div>
                   )}
                   {method.kind === 'inperson' && (
@@ -138,13 +189,13 @@ export default function Give() {
           <h3 className="text-white font-semibold text-lg mb-2">{content.give.contactCta.title}</h3>
           <p className="body-copy mb-5 text-sm">{content.give.contactCta.description}</p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <motion.a {...subtleTap} href={`mailto:${content.settings.contact.email}`} className="glass-action-soft px-5 text-sm font-medium text-blue-300 hover:text-white">
+            <motion.a {...subtleTap} href={`mailto:${globalInfo.contactEmail || content.settings.contact.email}`} className="glass-action-soft px-5 text-sm font-medium text-blue-300 hover:text-white">
               <Mail className="w-4 h-4" />
-              {content.settings.contact.email}
+              {globalInfo.contactEmail || content.settings.contact.email}
             </motion.a>
-            <motion.a {...subtleTap} href={`tel:${formatPhoneHref(content.settings.contact.phoneHref || content.settings.contact.phoneDisplay)}`} className="glass-action-soft px-5 text-sm font-medium text-blue-300 hover:text-white">
+            <motion.a {...subtleTap} href={`tel:${formatPhoneHref(globalInfo.mobileNumberHref || globalInfo.mobileNumberDisplay || content.settings.contact.phoneHref || content.settings.contact.phoneDisplay)}`} className="glass-action-soft px-5 text-sm font-medium text-blue-300 hover:text-white">
               <Phone className="w-4 h-4" />
-              {content.settings.contact.phoneDisplay}
+              {globalInfo.mobileNumberDisplay || content.settings.contact.phoneDisplay}
             </motion.a>
           </div>
         </div>
