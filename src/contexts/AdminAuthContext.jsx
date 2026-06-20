@@ -7,29 +7,65 @@ export function AdminAuthProvider({ children }) {
   const [session, setSession] = useState(null);
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [adminChecked, setAdminChecked] = useState(false);
 
   useEffect(() => {
     if (!isSupabaseConfigured || !supabase) {
       setLoading(false);
+      setAdminChecked(true);
       return undefined;
     }
 
     let active = true;
+
+    async function resolveAdmin(nextSession) {
+      if (!nextSession?.user) {
+        if (active) {
+          setIsAdmin(false);
+          setAdminChecked(true);
+        }
+        return;
+      }
+
+      try {
+        const { data, error } = await supabase.rpc('is_admin');
+
+        if (!active) {
+          return;
+        }
+
+        setIsAdmin(!error && Boolean(data));
+      } catch {
+        if (active) {
+          setIsAdmin(false);
+        }
+      } finally {
+        if (active) {
+          setAdminChecked(true);
+        }
+      }
+    }
 
     supabase.auth.getSession().then(({ data }) => {
       if (!active) {
         return;
       }
 
-      setSession(data.session || null);
-      setUser(data.session?.user || null);
+      const nextSession = data.session || null;
+      setSession(nextSession);
+      setUser(nextSession?.user || null);
       setLoading(false);
+      setAdminChecked(false);
+      resolveAdmin(nextSession);
     });
 
     const { data: listener } = supabase.auth.onAuthStateChange((_event, nextSession) => {
       setSession(nextSession || null);
       setUser(nextSession?.user || null);
       setLoading(false);
+      setAdminChecked(false);
+      resolveAdmin(nextSession || null);
     });
 
     return () => {
@@ -57,6 +93,9 @@ export function AdminAuthProvider({ children }) {
 
     const { error } = await supabase.auth.signOut();
 
+    setIsAdmin(false);
+    setAdminChecked(true);
+
     if (error) {
       throw error;
     }
@@ -68,9 +107,11 @@ export function AdminAuthProvider({ children }) {
     loading,
     isConfigured: isSupabaseConfigured,
     isAuthenticated: Boolean(session?.user),
+    isAdmin,
+    adminChecked,
     signIn,
     signOut,
-  }), [session, user, loading]);
+  }), [session, user, loading, isAdmin, adminChecked]);
 
   return <AdminAuthContext.Provider value={value}>{children}</AdminAuthContext.Provider>;
 }

@@ -13,6 +13,7 @@ import {
 import NoticeBanner from '@/components/admin-portal/NoticeBanner';
 import StickyPublishBar from '@/components/admin-portal/StickyPublishBar';
 import { useAdminAuth } from '@/contexts/AdminAuthContext';
+import { useAdminPortal } from '@/contexts/AdminPortalContext';
 import { cn } from '@/lib/utils';
 
 const navItems = [
@@ -24,12 +25,33 @@ const navItems = [
   { to: '/admin/messages', icon: MessageSquare, label: 'Messages' },
 ];
 
+const UNSAVED_CHANGES_PROMPT = 'You have unsaved changes that will be lost. Leave this page anyway?';
+
 export default function AdminLayout() {
   const auth = useAdminAuth();
+  const portal = useAdminPortal();
   const location = useLocation();
   const navigate = useNavigate();
 
+  function confirmDiscardChanges() {
+    if (!portal.hasUnsavedChanges) {
+      return true;
+    }
+
+    return window.confirm(UNSAVED_CHANGES_PROMPT);
+  }
+
+  function handleNavClick(event) {
+    if (!confirmDiscardChanges()) {
+      event.preventDefault();
+    }
+  }
+
   async function handleLogout() {
+    if (!confirmDiscardChanges()) {
+      return;
+    }
+
     await auth.signOut();
     navigate('/admin/login');
   }
@@ -63,6 +85,7 @@ export default function AdminLayout() {
                 <NavLink
                   key={to}
                   to={to}
+                  onClick={handleNavClick}
                   className={cn(
                     'admin-chip gap-2',
                     isActive ? 'bg-[#4857d6] text-white' : 'border border-[#dbe1ea] bg-white text-muted-foreground',
@@ -96,6 +119,7 @@ export default function AdminLayout() {
             <NavLink
               key={to}
               to={to}
+              onClick={handleNavClick}
               className={({ isActive }) => cn(
                 'mb-1 flex min-h-[2.7rem] items-center gap-3 rounded-full px-4 text-sm transition-all',
                 (matchPrefix ? location.pathname.startsWith(matchPrefix) : isActive)

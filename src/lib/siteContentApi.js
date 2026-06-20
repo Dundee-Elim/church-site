@@ -6,9 +6,24 @@ const CONTENT_TABLE = 'site_content_versions';
 const CONTACT_TABLE = 'contact_submissions';
 const PRAYER_TABLE = 'prayer_submissions';
 const MEDIA_BUCKET = 'site-media';
+const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
 
 function clone(value) {
   return JSON.parse(JSON.stringify(value));
+}
+
+function validateImageFile(file) {
+  if (!file) {
+    throw new Error('No file selected.');
+  }
+
+  if (!String(file.type || '').startsWith('image/')) {
+    throw new Error('Please choose an image file (PNG, JPG, WebP, GIF, or SVG).');
+  }
+
+  if (file.size > MAX_IMAGE_BYTES) {
+    throw new Error('That image is too large. Please choose a file under 5MB.');
+  }
 }
 
 function getSetupError() {
@@ -259,6 +274,8 @@ export async function uploadMedia(file) {
   if (!isSupabaseConfigured) {
     throw getSetupError();
   }
+
+  validateImageFile(file);
 
   const client = requireSupabase();
   const extension = file.name.includes('.') ? file.name.split('.').pop() : 'bin';

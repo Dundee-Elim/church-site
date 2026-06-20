@@ -90,7 +90,7 @@ export default function EventCard({ event, compact = false }) {
   return (
     <div className="glass-panel transition-all hover:-translate-y-1 hover:border-blue-400/30">
       {event.image_url && (
-        <img src={event.image_url} alt={event.title} className="h-44 w-full object-cover opacity-85" />
+        <img src={event.image_url} alt={event.title} loading="lazy" className="h-44 w-full object-cover opacity-85" />
       )}
       <div className="p-6">
         <div className="mb-3 flex items-center justify-between">

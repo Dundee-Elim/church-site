@@ -19,12 +19,21 @@ const inputClass = 'glass-input-field';
 export default function Contact() {
   const { content } = useSiteContent();
   const [form, setForm] = useState({ name: '', email: '', phone: '', subject: '', message: '' });
+  // Honeypot: kept empty by real users; bots tend to fill every field.
+  const [botField, setBotField] = useState('');
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
   async function handleSubmit(event) {
     event.preventDefault();
+
+    // Silently drop suspected spam without tipping off the bot.
+    if (botField.trim()) {
+      setSubmitted(true);
+      return;
+    }
+
     setLoading(true);
     setError('');
 
@@ -138,6 +147,17 @@ export default function Contact() {
               <>
                 <h2 className="font-display text-2xl font-bold text-white mb-6">{content.contact.form.title}</h2>
                 <form onSubmit={handleSubmit} className="space-y-4">
+                  <div className="hidden" aria-hidden="true">
+                    <label htmlFor="contact-company">Company (leave blank)</label>
+                    <input
+                      id="contact-company"
+                      type="text"
+                      tabIndex={-1}
+                      autoComplete="off"
+                      value={botField}
+                      onChange={(event) => setBotField(event.target.value)}
+                    />
+                  </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <label htmlFor="contact-name" className="metadata-text mb-2 block uppercase tracking-wider">Your Name *</label>

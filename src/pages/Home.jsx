@@ -302,7 +302,7 @@ export default function Home() {
                   viewport={{ once: true }}
                   className="public-media aspect-[4/3]"
                 >
-                  <img src={resolveMediaSrc(asset)} alt={asset.alt || 'Life at Dundee Elim'} className="h-full w-full object-cover" />
+                  <img src={resolveMediaSrc(asset)} alt={asset.alt || 'Life at Dundee Elim'} loading="lazy" className="h-full w-full object-cover" />
                 </motion.div>
               ))}
             </div>
@@ -316,7 +316,7 @@ export default function Home() {
                   viewport={{ once: true }}
                   className="public-media aspect-[16/9] sm:aspect-[16/7]"
                 >
-                  <img src={resolveMediaSrc(asset)} alt={asset.alt || 'Life at Dundee Elim'} className="h-full w-full object-cover" />
+                  <img src={resolveMediaSrc(asset)} alt={asset.alt || 'Life at Dundee Elim'} loading="lazy" className="h-full w-full object-cover" />
                 </motion.div>
               ))}
             </div>

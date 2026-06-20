@@ -144,6 +144,50 @@ export function createServerClient({ accessToken = '', preferServiceRole = false
   throw new Error('Missing Supabase credentials for sermon extraction.');
 }
 
+export async function isAllowedAdmin(user, accessToken) {
+  if (!user) {
+    return false;
+  }
+
+  // Preferred path: ask the database (via the caller's own token) whether they
+  // are an allow-listed admin. is_admin() is SECURITY DEFINER and keyed off the
+  // JWT, so this cannot be spoofed by the client.
+  if (accessToken && hasPublicClientCredentials()) {
+    const client = createAccessTokenClient(accessToken);
+    const { data, error } = await client.rpc('is_admin');
+
+    if (!error) {
+      return Boolean(data);
+    }
+  }
+
+  // Fallback: check the allowlist directly with the service role (e.g. when
+  // only the service role key is configured for this environment).
+  if (hasServiceRoleCredentials()) {
+    const client = createServiceRoleClient();
+    const email = cleanString(user.email).toLowerCase();
+    const filters = [`user_id.eq.${user.id}`];
+
+    if (email) {
+      filters.push(`email.eq.${email}`);
+    }
+
+    const { data, error } = await client
+      .from('admin_allowlist')
+      .select('id')
+      .or(filters.join(','))
+      .limit(1);
+
+    if (error) {
+      throw error;
+    }
+
+    return Boolean(data && data.length > 0);
+  }
+
+  return false;
+}
+
 export async function verifyAdminBearerToken(headersOrToken) {
   const accessToken = extractBearerToken(headersOrToken);
 
@@ -156,6 +200,10 @@ export async function verifyAdminBearerToken(headersOrToken) {
 
   if (error || !data?.user) {
     throw new Error('Invalid or expired admin session.');
+  }
+
+  if (!(await isAllowedAdmin(data.user, accessToken))) {
+    throw new Error('Your account is not authorised for admin access.');
   }
 
   return data.user;

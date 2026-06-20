@@ -309,7 +309,7 @@ export default function Sermons() {
                     >
                       {specularLine}
                       <div className="relative aspect-video bg-black/40">
-                        <img src={video.thumbnailUrl} alt={video.title} className="h-full w-full object-cover opacity-70 transition-opacity group-hover:opacity-100" />
+                        <img src={video.thumbnailUrl} alt={video.title} loading="lazy" className="h-full w-full object-cover opacity-70 transition-opacity group-hover:opacity-100" />
                         <div className="absolute inset-0 flex items-center justify-center">
                           <div className="rounded-full p-3 transition-all" style={{ background: 'rgba(239,68,68,0.8)' }}>
                             <Play className="h-5 w-5 fill-white text-white" />

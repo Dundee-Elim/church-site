@@ -31,6 +31,23 @@ export function AdminPortalProvider({ children }) {
     [draftContent, savedSnapshot],
   );
 
+  // Warn before a full page unload (refresh / tab close / external navigation)
+  // while there are unsaved draft edits.
+  useEffect(() => {
+    if (!hasUnsavedChanges) {
+      return undefined;
+    }
+
+    function handleBeforeUnload(event) {
+      event.preventDefault();
+      event.returnValue = '';
+      return '';
+    }
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [hasUnsavedChanges]);
+
   const clearMessages = useCallback(() => {
     setError('');
     setNotice('');

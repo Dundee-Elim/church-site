@@ -156,7 +156,7 @@ export default function Ministries() {
         <div className="section-inner grid grid-cols-2 gap-3 lg:grid-cols-4">
           {content.ministries.photoStrip.map((asset, index) => (
             <div key={`${asset.url}-${index}`} className="public-media aspect-square p-0.5">
-              <img src={resolveMediaSrc(asset)} alt={asset.alt || 'Community'} className="h-full w-full object-cover opacity-85 transition-opacity duration-300 hover:opacity-100" />
+              <img src={resolveMediaSrc(asset)} alt={asset.alt || 'Community'} loading="lazy" className="h-full w-full object-cover opacity-85 transition-opacity duration-300 hover:opacity-100" />
             </div>
           ))}
         </div>

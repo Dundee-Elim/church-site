@@ -12,12 +12,21 @@ const inputClass = "glass-input-field";
 export default function PrayerRequestForm() {
   const { content } = useSiteContent();
   const [form, setForm] = useState({ name: '', email: '', request: '', is_private: false });
+  // Honeypot: kept empty by real users; bots tend to fill every field.
+  const [botField, setBotField] = useState('');
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Silently drop suspected spam without tipping off the bot.
+    if (botField.trim()) {
+      setSubmitted(true);
+      return;
+    }
+
     setLoading(true);
     setError('');
 
@@ -89,6 +98,17 @@ export default function PrayerRequestForm() {
               ) : (
                 <motion.form key="form" initial={{ opacity: 0 }} animate={{ opacity: 1 }}
                   onSubmit={handleSubmit} className="space-y-4">
+                  <div className="hidden" aria-hidden="true">
+                    <label htmlFor="prayer-company">Company (leave blank)</label>
+                    <input
+                      id="prayer-company"
+                      type="text"
+                      tabIndex={-1}
+                      autoComplete="off"
+                      value={botField}
+                      onChange={e => setBotField(e.target.value)}
+                    />
+                  </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <label htmlFor="prayer-name" className="metadata-text mb-2 block uppercase tracking-wider">Your Name *</label>
