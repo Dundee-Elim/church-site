@@ -16,7 +16,7 @@ import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 
 const TAG_OPTIONS = ['Proclaim Jesus', 'Build Community', 'Serve the City'];
-const ICON_OPTIONS = ['heart', 'users', 'zap', 'star', 'church', 'book-open', 'utensils-crossed', 'baby', 'music'];
+const ICON_OPTIONS = ['heart', 'users', 'zap', 'star', 'church', 'book-open', 'utensils-crossed', 'baby', 'music', 'shield-check'];
 const THEME_OPTIONS = ['red', 'orange', 'blue', 'green', 'pink', 'indigo', 'amber', 'yellow', 'purple'];
 
 const EMPTY_FORM = {

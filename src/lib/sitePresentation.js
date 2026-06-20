@@ -49,6 +49,7 @@ export const ministryIconMap = {
   'utensils-crossed': UtensilsCrossed,
   baby: Baby,
   music: Music,
+  'shield-check': ShieldCheck,
 };
 
 export const ministryThemeMap = {

@@ -129,7 +129,7 @@ const ministryItemSchema = z.object({
   linkUrl: z.string().default(''),
   contactEmail: z.string().default(''),
   contactPhone: z.string().default(''),
-  iconKey: z.enum(['heart', 'users', 'zap', 'star', 'church', 'book-open', 'utensils-crossed', 'baby', 'music']).default('users'),
+  iconKey: z.enum(['heart', 'users', 'zap', 'star', 'church', 'book-open', 'utensils-crossed', 'baby', 'music', 'shield-check']).default('users'),
   theme: z.enum(['red', 'orange', 'blue', 'green', 'pink', 'indigo', 'amber', 'yellow', 'purple']).default('blue'),
   status: z.enum(['draft', 'published']).default('published'),
   publishedAt: z.string().default(''),

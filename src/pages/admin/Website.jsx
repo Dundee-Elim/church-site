@@ -237,17 +237,8 @@ function GlobalEditor({ admin }) {
         <div className="grid gap-4 md:grid-cols-2">
           <Field label="Give Online Label" value={settings.siteInfo.giving.onlineGivingLabel} onChange={(value) => update(['siteInfo', 'giving', 'onlineGivingLabel'], value)} />
           <Field label="Give Online URL" value={settings.siteInfo.giving.onlineGivingUrl} onChange={(value) => update(['siteInfo', 'giving', 'onlineGivingUrl'], value)} placeholder="https://..." />
-          <Field label="Standing Order Title" value={settings.siteInfo.giving.standingOrderTitle} onChange={(value) => update(['siteInfo', 'giving', 'standingOrderTitle'], value)} />
-          <Field label="Bank Transfer Title" value={settings.siteInfo.giving.bankTransferTitle} onChange={(value) => update(['siteInfo', 'giving', 'bankTransferTitle'], value)} />
-          <Field label="Bank Name" value={settings.siteInfo.giving.bankName} onChange={(value) => update(['siteInfo', 'giving', 'bankName'], value)} />
-          <Field label="Account Name" value={settings.siteInfo.giving.accountName} onChange={(value) => update(['siteInfo', 'giving', 'accountName'], value)} />
-          <Field label="Sort Code" value={settings.siteInfo.giving.sortCode} onChange={(value) => update(['siteInfo', 'giving', 'sortCode'], value)} />
-          <Field label="Account Number" value={settings.siteInfo.giving.accountNumber} onChange={(value) => update(['siteInfo', 'giving', 'accountNumber'], value)} />
-          <Field label="IBAN" value={settings.siteInfo.giving.iban} onChange={(value) => update(['siteInfo', 'giving', 'iban'], value)} />
-          <Field label="BIC" value={settings.siteInfo.giving.bic} onChange={(value) => update(['siteInfo', 'giving', 'bic'], value)} />
         </div>
-        <AreaField label="Bank Reference Note" value={settings.siteInfo.giving.referenceNote} onChange={(value) => update(['siteInfo', 'giving', 'referenceNote'], value)} rows={2} />
-        <AreaField label="QR Code Note" value={settings.siteInfo.giving.qrCodeNote} onChange={(value) => update(['siteInfo', 'giving', 'qrCodeNote'], value)} rows={2} />
+        <AreaField label="QR Code Note" value={settings.siteInfo.giving.qrCodeNote} onChange={(value) => update(['siteInfo', 'giving', 'qrCodeNote'], value)} rows={2} placeholder="Please contact the church office if you need help with giving." />
         <ImageUpload
           label="Giving QR Code Image"
           value={settings.siteInfo.giving.qrCodeImage}

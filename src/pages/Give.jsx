@@ -13,33 +13,15 @@ const specularLine = (
 export default function Give() {
   const { content } = useSiteContent();
   const globalInfo = getGlobalSiteInfo(content);
-  const giveMethods = (content.give.methods || []).map((method) => {
-    if (method.kind === 'online') {
-      return {
-        ...method,
-        ctaLabel: globalInfo.giving.onlineGivingLabel || method.ctaLabel,
-        ctaUrl: globalInfo.giving.onlineGivingUrl || method.ctaUrl,
-      };
-    }
-
-    if (method.kind === 'bank') {
-      return {
-        ...method,
-        title: method.title || `${globalInfo.giving.standingOrderTitle} / ${globalInfo.giving.bankTransferTitle}`,
-        contactEmail: globalInfo.contactEmail || method.contactEmail,
-        contactPhone: globalInfo.mobileNumberDisplay || method.contactPhone,
-      };
-    }
-
-    if (method.kind === 'inperson') {
-      return {
-        ...method,
-        addressLines: [globalInfo.churchName, globalInfo.addressLine1, globalInfo.addressLine2].filter(Boolean),
-      };
-    }
-
-    return method;
-  });
+  const onlineMethod = (content.give.methods || []).find((method) => method.kind === 'online') || { kind: 'online', title: '', description: '', ctaLabel: '', ctaUrl: '' };
+  const OnlineIcon = giveMethodConfig.online.Icon;
+  const giveOnlineMethod = {
+    ...onlineMethod,
+    ctaLabel: globalInfo.giving.onlineGivingLabel || onlineMethod.ctaLabel,
+    ctaUrl: globalInfo.giving.onlineGivingUrl || onlineMethod.ctaUrl,
+    title: onlineMethod.title || globalInfo.giving.onlineGivingLabel || 'Give Online',
+    description: onlineMethod.description || 'Give securely online as a one-off payment or set up regular giving.',
+  };
 
   return (
     <div className="pb-20">
@@ -76,75 +58,34 @@ export default function Give() {
       <section className="section-wrap">
         <div className="section-inner">
           <h2 className="section-title mb-8 text-center sm:mb-10">{content.give.methodsTitle}</h2>
-          <div className="public-grid grid-cols-1 md:grid-cols-3">
-            {giveMethods.map((method, index) => {
-              const style = giveMethodConfig[method.kind] || giveMethodConfig.online;
-              const Icon = style.Icon;
-
-              return (
-                <motion.div key={`${method.kind}-${index}`} {...fadeUp} transition={{ ...fadeUp.transition, delay: index * 0.06 }} className="public-card">
-                  <div className="glass-icon-badge mb-5" style={{ background: style.bg }}>
-                    <Icon className={`w-7 h-7 ${style.color}`} />
+          <div className="public-grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+            <motion.div {...fadeUp} className="public-card md:col-span-2 lg:col-span-1">
+              <div className="glass-icon-badge mb-5" style={{ background: giveMethodConfig.online.bg }}>
+                <OnlineIcon className={`w-7 h-7 ${giveMethodConfig.online.color}`} />
+              </div>
+              <h3 className="card-title mb-3">{giveOnlineMethod.title}</h3>
+              <p className="body-copy mb-4 text-sm">{giveOnlineMethod.description}</p>
+              {giveOnlineMethod.ctaLabel && giveOnlineMethod.ctaUrl && (
+                <motion.a {...subtleTap} href={giveOnlineMethod.ctaUrl} target="_blank" rel="noreferrer" className="glass-action-primary px-5 text-sm font-semibold">
+                  {giveOnlineMethod.ctaLabel}
+                  <ArrowRight className="w-4 h-4" />
+                </motion.a>
+              )}
+              <div className="glass-inline-panel mt-4 p-4 text-sm">
+                {globalInfo.giving.qrCodeImage?.url || globalInfo.giving.qrCodeImage?.path ? (
+                  <img
+                    src={resolveMediaSrc(globalInfo.giving.qrCodeImage)}
+                    alt={globalInfo.giving.qrCodeImage.alt || 'Giving QR code'}
+                    className="mx-auto mb-3 h-36 w-36 rounded-lg object-contain"
+                  />
+                ) : (
+                  <div className="mx-auto mb-3 flex h-36 w-36 items-center justify-center rounded-lg border border-dashed border-white/20 text-center text-xs text-white/45">
+                    QR code coming soon
                   </div>
-                  <h3 className="card-title mb-3">{method.title}</h3>
-                  <p className="body-copy mb-4 text-sm">{method.description}</p>
-                  {method.kind === 'online' && method.ctaLabel && method.ctaUrl && (
-                    <motion.a {...subtleTap} href={method.ctaUrl} target="_blank" rel="noreferrer" className="glass-action-primary px-5 text-sm font-semibold">
-                      {method.ctaLabel}
-                      <ArrowRight className="w-4 h-4" />
-                    </motion.a>
-                  )}
-                  {method.kind === 'online' && (
-                    <div className="glass-inline-panel mt-4 p-4 text-sm">
-                      {globalInfo.giving.qrCodeImage?.url || globalInfo.giving.qrCodeImage?.path ? (
-                        <img
-                          src={resolveMediaSrc(globalInfo.giving.qrCodeImage)}
-                          alt={globalInfo.giving.qrCodeImage.alt || 'Giving QR code'}
-                          className="mx-auto mb-3 h-36 w-36 rounded-lg object-contain"
-                        />
-                      ) : (
-                        <div className="mx-auto mb-3 flex h-36 w-36 items-center justify-center rounded-lg border border-dashed border-white/20 text-center text-xs text-white/45">
-                          QR Code Placeholder
-                        </div>
-                      )}
-                      <p className="text-white/55">{globalInfo.giving.qrCodeNote}</p>
-                    </div>
-                  )}
-                  {method.kind === 'bank' && (
-                    <div className="glass-inline-panel mb-4 space-y-2 p-4 text-sm">
-                      {method.contactEmail && (
-                        <div className="flex items-center gap-2 text-white/60">
-                          <Mail className="w-4 h-4 text-blue-400 shrink-0" />
-                          <a href={`mailto:${method.contactEmail}`} className="hover:text-blue-300 transition-colors">{method.contactEmail}</a>
-                        </div>
-                      )}
-                      {method.contactPhone && (
-                        <div className="flex items-center gap-2 text-white/60">
-                          <Phone className="w-4 h-4 text-blue-400 shrink-0" />
-                          <a href={`tel:${formatPhoneHref(method.contactPhone)}`} className="hover:text-blue-300 transition-colors">{method.contactPhone}</a>
-                        </div>
-                      )}
-                      {globalInfo.giving.bankName && <div className="text-white/60">Bank: <span className="text-white/80">{globalInfo.giving.bankName}</span></div>}
-                      {globalInfo.giving.accountName && <div className="text-white/60">Account name: <span className="text-white/80">{globalInfo.giving.accountName}</span></div>}
-                      {globalInfo.giving.sortCode && <div className="text-white/60">Sort code: <span className="text-white/80">{globalInfo.giving.sortCode}</span></div>}
-                      {globalInfo.giving.accountNumber && <div className="text-white/60">Account number: <span className="text-white/80">{globalInfo.giving.accountNumber}</span></div>}
-                      {globalInfo.giving.iban && <div className="text-white/60">IBAN: <span className="text-white/80">{globalInfo.giving.iban}</span></div>}
-                      {globalInfo.giving.bic && <div className="text-white/60">BIC: <span className="text-white/80">{globalInfo.giving.bic}</span></div>}
-                      {globalInfo.giving.referenceNote && <div className="text-white/55 text-xs mt-2">{globalInfo.giving.referenceNote}</div>}
-                    </div>
-                  )}
-                  {method.kind === 'inperson' && (
-                    <div className="glass-inline-panel p-4 text-sm">
-                      {method.addressLines.map((line) => (
-                        <p key={line} className={line === method.addressLines[0] ? 'text-white font-medium mb-1' : 'text-white/50'}>
-                          {line}
-                        </p>
-                      ))}
-                    </div>
-                  )}
-                </motion.div>
-              );
-            })}
+                )}
+                <p className="text-white/55">{globalInfo.giving.qrCodeNote || 'Please contact the church office if you need help with giving.'}</p>
+              </div>
+            </motion.div>
           </div>
         </div>
       </section>
