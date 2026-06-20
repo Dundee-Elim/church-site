@@ -55,6 +55,45 @@ export function generateRecurringEvents(templates, { fromDate = new Date(), maxO
   });
 }
 
+/**
+ * Returns one card per published recurring template (no date expansion),
+ * plus published special/one-off events. Used by the Events list view so
+ * each recurring gathering appears exactly once with its recurrence pattern.
+ */
+export function buildListViewEvents(eventContent) {
+  const recurring = (eventContent.recurringTemplates || [])
+    .filter(isPublishedContentItem)
+    .map((template) => ({
+      id: `template-${template.id || template.title}`,
+      title: template.title,
+      description: template.description,
+      date: '',
+      time: template.time,
+      location: template.location,
+      category: template.category,
+      is_recurring: true,
+      recurring_pattern: template.recurringLabel || template.weekday,
+    }));
+
+  const special = (eventContent.specialEvents || [])
+    .filter(isPublishedContentItem)
+    .map((event, index) => ({
+      id: event.id || `special-${event.title}-${index}`,
+      title: event.title,
+      description: event.description,
+      date: event.date,
+      time: event.time,
+      location: event.location,
+      category: event.category,
+      image_url: event.image?.url || '',
+      is_recurring: false,
+      recurring_pattern: '',
+    }))
+    .sort((a, b) => a.date.localeCompare(b.date));
+
+  return [...recurring, ...special];
+}
+
 export function buildUpcomingEvents(eventContent, fromDate = new Date()) {
   const recurring = generateRecurringEvents(eventContent.recurringTemplates || [], { fromDate });
   const special = (eventContent.specialEvents || []).filter(isPublishedContentItem).map((event, index) => ({

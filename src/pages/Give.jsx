@@ -14,7 +14,11 @@ export default function Give() {
   const { content } = useSiteContent();
   const globalInfo = getGlobalSiteInfo(content);
   const onlineMethod = (content.give.methods || []).find((method) => method.kind === 'online') || { kind: 'online', title: '', description: '', ctaLabel: '', ctaUrl: '' };
+  const bankMethod = (content.give.methods || []).find((method) => method.kind === 'bank') || { kind: 'bank', title: '', description: '' };
+  const inpersonMethod = (content.give.methods || []).find((method) => method.kind === 'inperson') || { kind: 'inperson', title: '', description: '', addressLines: [] };
   const OnlineIcon = giveMethodConfig.online.Icon;
+  const BankIcon = giveMethodConfig.bank.Icon;
+  const InpersonIcon = giveMethodConfig.inperson.Icon;
   const giveOnlineMethod = {
     ...onlineMethod,
     ctaLabel: globalInfo.giving.onlineGivingLabel || onlineMethod.ctaLabel,
@@ -22,6 +26,21 @@ export default function Give() {
     title: onlineMethod.title || globalInfo.giving.onlineGivingLabel || 'Give Online',
     description: onlineMethod.description || 'Give securely online as a one-off payment or set up regular giving.',
   };
+  const giveBankMethod = {
+    ...bankMethod,
+    title: bankMethod.title || 'Standing Order',
+    description: bankMethod.description || 'To set up a standing order or request giving details, please contact the church office.',
+  };
+  const giveInpersonMethod = {
+    ...inpersonMethod,
+    title: inpersonMethod.title || 'Give in Person or by Cheque',
+    description: inpersonMethod.description || "You can give in person during a service or send a cheque payable to 'Dundee Elim Church' to the church address.",
+  };
+  const inpersonAddress = [
+    globalInfo.churchName || 'Dundee Elim Church',
+    globalInfo.addressLine1,
+    globalInfo.addressLine2,
+  ].filter(Boolean);
 
   return (
     <div className="pb-20">
@@ -58,8 +77,10 @@ export default function Give() {
       <section className="section-wrap">
         <div className="section-inner">
           <h2 className="section-title mb-8 text-center sm:mb-10">{content.give.methodsTitle}</h2>
-          <div className="public-grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-            <motion.div {...fadeUp} className="public-card md:col-span-2 lg:col-span-1">
+          <div className="public-grid grid-cols-1 md:grid-cols-3">
+
+            {/* A — Give Online */}
+            <motion.div {...fadeUp} transition={{ ...fadeUp.transition, delay: 0 }} className="public-card">
               <div className="glass-icon-badge mb-5" style={{ background: giveMethodConfig.online.bg }}>
                 <OnlineIcon className={`w-7 h-7 ${giveMethodConfig.online.color}`} />
               </div>
@@ -83,9 +104,47 @@ export default function Give() {
                     QR code coming soon
                   </div>
                 )}
-                <p className="text-white/55">{globalInfo.giving.qrCodeNote || 'Please contact the church office if you need help with giving.'}</p>
+                <p className="text-center text-white/55 text-xs">{globalInfo.giving.qrCodeNote || 'QR code coming soon.'}</p>
               </div>
             </motion.div>
+
+            {/* B — Standing Order (no bank details shown publicly) */}
+            <motion.div {...fadeUp} transition={{ ...fadeUp.transition, delay: 0.06 }} className="public-card">
+              <div className="glass-icon-badge mb-5" style={{ background: giveMethodConfig.bank.bg }}>
+                <BankIcon className={`w-7 h-7 ${giveMethodConfig.bank.color}`} />
+              </div>
+              <h3 className="card-title mb-3">{giveBankMethod.title}</h3>
+              <p className="body-copy mb-4 text-sm">{giveBankMethod.description}</p>
+              <div className="glass-inline-panel p-4 space-y-2 text-sm">
+                {globalInfo.contactEmail && (
+                  <div className="flex items-center gap-2 text-white/60">
+                    <Mail className="w-4 h-4 text-blue-400 shrink-0" />
+                    <a href={`mailto:${globalInfo.contactEmail}`} className="hover:text-blue-300 transition-colors">{globalInfo.contactEmail}</a>
+                  </div>
+                )}
+                {globalInfo.mobileNumberDisplay && (
+                  <div className="flex items-center gap-2 text-white/60">
+                    <Phone className="w-4 h-4 text-blue-400 shrink-0" />
+                    <a href={`tel:${formatPhoneHref(globalInfo.mobileNumberHref || globalInfo.mobileNumberDisplay)}`} className="hover:text-blue-300 transition-colors">{globalInfo.mobileNumberDisplay}</a>
+                  </div>
+                )}
+              </div>
+            </motion.div>
+
+            {/* C — Give in Person or by Cheque */}
+            <motion.div {...fadeUp} transition={{ ...fadeUp.transition, delay: 0.12 }} className="public-card">
+              <div className="glass-icon-badge mb-5" style={{ background: giveMethodConfig.inperson.bg }}>
+                <InpersonIcon className={`w-7 h-7 ${giveMethodConfig.inperson.color}`} />
+              </div>
+              <h3 className="card-title mb-3">{giveInpersonMethod.title}</h3>
+              <p className="body-copy mb-4 text-sm">{giveInpersonMethod.description}</p>
+              <div className="glass-inline-panel p-4 text-sm">
+                {inpersonAddress.map((line, i) => (
+                  <p key={line} className={i === 0 ? 'text-white font-medium mb-1' : 'text-white/50'}>{line}</p>
+                ))}
+              </div>
+            </motion.div>
+
           </div>
         </div>
       </section>
@@ -139,6 +198,14 @@ export default function Give() {
               {globalInfo.mobileNumberDisplay || content.settings.contact.phoneDisplay}
             </motion.a>
           </div>
+        </div>
+      </section>
+
+      <section className="section-wrap-compact pt-0">
+        <div className="section-inner-narrow">
+          <p className="text-center text-white/45 text-sm">
+            Thank you for your generous support to the ministry of Dundee Elim Church.
+          </p>
         </div>
       </section>
     </div>

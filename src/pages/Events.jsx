@@ -8,7 +8,7 @@ import DayPanel from '@/components/events/DayPanel';
 import EventCard from '@/components/events/EventCard';
 import SEOHead from '@/components/SEOHead';
 import { useSiteContent } from '@/contexts/SiteContentContext';
-import { buildUpcomingEvents } from '@/content/eventUtils';
+import { buildListViewEvents, buildUpcomingEvents } from '@/content/eventUtils';
 import { resolveMediaSrc } from '@/lib/siteContentUtils';
 import { recurringEventCategories } from '@/lib/sitePresentation';
 
@@ -23,8 +23,11 @@ export default function Events() {
   const [selectedDay, setSelectedDay] = useState(null);
   const [currentWeek, setCurrentWeek] = useState(new Date());
 
+  // Calendar views (week/month) need expanded occurrences; list view shows one card per recurring template.
   const upcomingEvents = useMemo(() => buildUpcomingEvents(content.events), [content.events]);
+  const listEvents = useMemo(() => buildListViewEvents(content.events), [content.events]);
   const filtered = upcomingEvents.filter((event) => filter === 'all' || event.category === filter);
+  const filteredList = listEvents.filter((event) => filter === 'all' || event.category === filter);
   const views = [
     { key: 'list', label: content.events.viewLabels.list, Icon: LayoutGrid },
     { key: 'week', label: content.events.viewLabels.week, Icon: CalendarRange },
@@ -92,12 +95,12 @@ export default function Events() {
         <div className="section-inner">
           {view === 'list' && (
             <div className="public-grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-              {filtered.map((event, index) => (
+              {filteredList.map((event, index) => (
                 <motion.div key={event.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.26, delay: Math.min(index * 0.025, 0.12), ease: 'easeOut' }}>
                   <EventCard event={event} />
                 </motion.div>
               ))}
-              {filtered.length === 0 && (
+              {filteredList.length === 0 && (
                 <p className="glass-panel py-16 text-center text-white/55 md:col-span-2 lg:col-span-3">No events found for this category.</p>
               )}
             </div>
