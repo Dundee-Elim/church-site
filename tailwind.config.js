@@ -8,6 +8,19 @@ module.exports = {
         inter: ['Inter', 'sans-serif'],
         display: ['Playfair Display', 'serif'],
       },
+      maxWidth: {
+        page: 'var(--ds-w-page)',
+        feature: 'var(--ds-w-feature)',
+        text: 'var(--ds-w-text)',
+      },
+      fontSize: {
+        'ds-hero': ['var(--ds-text-hero)', { lineHeight: '1.02', letterSpacing: '-0.02em' }],
+        'ds-page-title': ['var(--ds-text-page-title)', { lineHeight: '1.05', letterSpacing: '-0.015em' }],
+        'ds-section': ['var(--ds-text-section)', { lineHeight: '1.12', letterSpacing: '-0.01em' }],
+        'ds-card': ['var(--ds-text-card)', { lineHeight: '1.3' }],
+        'ds-body': ['var(--ds-text-body)', { lineHeight: '1.7' }],
+        'ds-label': ['var(--ds-text-label)', { lineHeight: '1', letterSpacing: '0.22em' }],
+      },
   		borderRadius: {
   			lg: 'var(--radius)',
   			md: 'calc(var(--radius) - 4px)',
@@ -15,6 +28,9 @@ module.exports = {
   			xl: 'calc(var(--radius) + 4px)',
   			'2xl': 'calc(var(--radius) + 8px)',
   			'3xl': 'calc(var(--radius) + 16px)',
+  			'ds-card': 'var(--ds-radius-card)',
+  			'ds-feature': 'var(--ds-radius-feature)',
+  			'ds-inner': 'var(--ds-radius-inner)',
   		},
   		colors: {
   			background: 'hsl(var(--background))',

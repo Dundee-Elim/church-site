@@ -1,101 +1,109 @@
 import { motion } from 'framer-motion';
-import { ExternalLink, ShieldCheck } from 'lucide-react';
+import { ExternalLink, FileText, Mail, ShieldCheck } from 'lucide-react';
 import SEOHead from '@/components/SEOHead';
+import {
+  Button,
+  GlassCard,
+  PageHero,
+  ResponsiveGrid,
+  Section,
+  SectionHeader,
+} from '@/components/system';
 import { useSiteContent } from '@/contexts/SiteContentContext';
 import { fadeUp } from '@/lib/motion';
-import { getGlobalSiteInfo, resolveMediaSrc } from '@/lib/siteContentUtils';
-import { safeguardingActionStyles, safeguardingResourceConfig } from '@/lib/sitePresentation';
+import { getGlobalSiteInfo } from '@/lib/siteContentUtils';
+import { safeguardingResourceConfig } from '@/lib/sitePresentation';
 
-const specularLine = (
-  <div className="absolute inset-x-0 top-0 h-px" style={{ background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent)' }} />
-);
+const calmResourceIcons = {
+  elim: ShieldCheck,
+  report: Mail,
+  policy: FileText,
+};
 
 export default function Safeguarding() {
   const { content } = useSiteContent();
   const globalInfo = getGlobalSiteInfo(content);
+  const safeguardingEmail = globalInfo.safeguardingEmail || globalInfo.contactEmail || content.settings.contact.email;
 
   return (
     <div className="pb-20">
       <SEOHead title={content.safeguarding.seo.title} description={content.safeguarding.seo.description} path="/safeguarding" />
 
-      <div className="page-hero">
-        <div className="page-hero-media">
-          <img src={resolveMediaSrc(content.safeguarding.header.image)} alt={content.safeguarding.header.image.alt || 'Safeguarding at Dundee Elim'} className="w-full h-full object-cover opacity-20" />
-          <div className="page-hero-overlay" />
-        </div>
-        <div className="page-hero-inner">
-          <span className="page-eyebrow">{content.safeguarding.header.eyebrow}</span>
-          <h1 className="page-title">
-            {content.safeguarding.header.titleLead} <span className="text-gradient">{content.safeguarding.header.titleHighlight}</span>
-          </h1>
-          <p className="page-description">{content.safeguarding.header.description}</p>
-        </div>
-      </div>
+      <PageHero
+        eyebrow={content.safeguarding.header.eyebrow}
+        title={(
+          <>
+            {content.safeguarding.header.titleLead}<span className="text-gradient">{content.safeguarding.header.titleHighlight}</span>
+          </>
+        )}
+        description={content.safeguarding.header.description}
+        image={content.safeguarding.header.image}
+      />
 
-      <section className="section-wrap">
-        <div className="section-inner-narrow">
-          <motion.div {...fadeUp} className="glass-panel-strong p-6 sm:p-10">
-            {specularLine}
-            <div className="absolute inset-0" style={{ background: 'linear-gradient(135deg, rgba(59,130,246,0.06), rgba(6,182,212,0.04))' }} />
-            <div className="relative z-10">
-              <div className="glass-icon-badge mb-5" style={{ background: 'rgba(59,130,246,0.1)' }}>
-                <ShieldCheck className="w-7 h-7 text-blue-400" />
+      <Section width="feature">
+        <motion.div {...fadeUp}>
+          <GlassCard variant="feature" className="overflow-hidden">
+            <div className="absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+            <div className="grid gap-8 lg:grid-cols-[0.72fr_1.28fr] lg:gap-10">
+              <div className="text-center lg:text-left">
+                <span className="mx-auto inline-flex h-14 w-14 items-center justify-center rounded-ds-inner border border-blue-200/15 bg-blue-300/10 text-blue-100 lg:mx-0">
+                  <ShieldCheck className="h-7 w-7" aria-hidden="true" />
+                </span>
+                <h2 className="mt-5 font-display text-3xl font-bold leading-tight text-white">
+                  {content.safeguarding.statement.title}
+                </h2>
               </div>
-              <h2 className="font-display text-3xl font-bold text-white mb-5">{content.safeguarding.statement.title}</h2>
-              <div className="body-copy space-y-4 text-sm">
+              <div className="space-y-4 text-ds-body text-white/72">
                 {content.safeguarding.statement.paragraphs.map((paragraph, index) => (
-                  <p key={`${index}-${paragraph.slice(0, 20)}`} className={index === content.safeguarding.statement.paragraphs.length - 1 ? 'text-white font-medium' : ''}>
+                  <p key={`${index}-${paragraph.slice(0, 20)}`} className={index === content.safeguarding.statement.paragraphs.length - 1 ? 'font-semibold text-white/90' : ''}>
                     {paragraph}
                   </p>
                 ))}
               </div>
             </div>
-          </motion.div>
-        </div>
-      </section>
+          </GlassCard>
+        </motion.div>
+      </Section>
 
-      <section className="section-wrap">
-        <div className="section-inner-narrow">
-          <div className="section-heading">
-            <h2 className="section-title text-2xl sm:text-3xl">{content.safeguarding.resourcesTitle}</h2>
+      <Section spacing="compact" width="feature">
+        <GlassCard className="flex flex-col items-center gap-5 text-center sm:flex-row sm:items-center sm:justify-between sm:text-left">
+          <div className="max-w-[640px]">
+            <p className="ds-eyebrow">Contact</p>
+            <h2 className="mt-3 font-display text-2xl font-bold leading-tight text-white">{content.safeguarding.contact.title}</h2>
+            <p className="mt-3 text-sm leading-7 text-white/72 sm:text-base">{content.safeguarding.contact.description}</p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-            {content.safeguarding.resources.map((resource, index) => {
-              const style = safeguardingResourceConfig[resource.kind] || safeguardingResourceConfig.elim;
-              const action = safeguardingActionStyles[resource.kind] || safeguardingActionStyles.elim;
-              const Icon = style.Icon;
+          <Button href={`mailto:${safeguardingEmail}`} variant="primary" className="shrink-0">
+            <Mail className="h-4 w-4" />
+            {content.safeguarding.contact.buttonLabel}
+          </Button>
+        </GlassCard>
+      </Section>
 
-              return (
-                <motion.div key={`${resource.kind}-${index}`} {...fadeUp} transition={{ delay: index * 0.1, duration: 0.6 }} className="public-card flex flex-col">
-                  {specularLine}
-                  <div className="glass-icon-badge mb-4" style={{ background: style.bg }}>
-                    <Icon className={`w-6 h-6 ${style.color}`} />
-                  </div>
-                  <h3 className="card-title mb-2 text-lg">{resource.title}</h3>
-                  <p className="body-copy mb-5 flex-1 text-sm">{resource.description}</p>
-                  <a href={resource.ctaUrl} target="_blank" rel="noreferrer" className={`glass-action-soft inline-flex px-4 text-sm font-medium ${action.className}`} style={action.style}>
+      <Section>
+        <SectionHeader title={content.safeguarding.resourcesTitle} description="Helpful links for policy, national guidance, and raising a concern through Elim." />
+        <ResponsiveGrid cols={3} className="mt-10">
+          {content.safeguarding.resources.map((resource, index) => {
+            const style = safeguardingResourceConfig[resource.kind] || safeguardingResourceConfig.elim;
+            const Icon = calmResourceIcons[resource.kind] || style.Icon || ShieldCheck;
+
+            return (
+              <motion.div key={`${resource.kind}-${index}`} {...fadeUp} transition={{ delay: index * 0.06, duration: 0.42 }}>
+                <GlassCard className="flex h-full flex-col">
+                  <span className="inline-flex h-12 w-12 items-center justify-center rounded-ds-inner border border-white/10 bg-blue-300/10 text-blue-200">
+                    <Icon className="h-6 w-6" aria-hidden="true" />
+                  </span>
+                  <h3 className="mt-5 font-display text-xl font-bold leading-tight text-white">{resource.title}</h3>
+                  <p className="mt-3 flex-1 text-sm leading-7 text-white/70">{resource.description}</p>
+                  <Button href={resource.ctaUrl} target="_blank" rel="noreferrer" variant={resource.kind === 'elim' ? 'primary' : 'soft'} size="sm" className="mt-6 self-start">
                     {resource.ctaLabel}
-                    <ExternalLink className="w-4 h-4" />
-                  </a>
-                </motion.div>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-
-      <section className="section-wrap pt-6">
-        <div className="section-inner-narrow">
-          <div className="public-card text-center">
-            {specularLine}
-            <h3 className="text-white font-semibold text-lg mb-2">{content.safeguarding.contact.title}</h3>
-            <p className="body-copy mb-5 text-sm">{content.safeguarding.contact.description}</p>
-            <a href={`mailto:${globalInfo.safeguardingEmail || globalInfo.contactEmail || content.settings.contact.email}`} className="glass-action-soft inline-flex px-5 text-sm font-medium text-blue-300 hover:text-white">
-              {content.safeguarding.contact.buttonLabel}
-            </a>
-          </div>
-        </div>
-      </section>
+                    <ExternalLink className="h-3.5 w-3.5" />
+                  </Button>
+                </GlassCard>
+              </motion.div>
+            );
+          })}
+        </ResponsiveGrid>
+      </Section>
     </div>
   );
 }

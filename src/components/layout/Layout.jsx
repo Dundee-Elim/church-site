@@ -34,6 +34,7 @@ export default function Layout() {
         <BrowserRenderClass />
         <LiquidGlassBackground />
         <ScrollToTop />
+        <Navbar />
         <main className="relative flex min-h-screen items-center justify-center px-6 text-center">
           <div className="max-w-md rounded-2xl border border-white/10 bg-black/20 px-6 py-5 backdrop-blur-sm">
             <p className="text-sm text-white/65">Loading latest website content...</p>

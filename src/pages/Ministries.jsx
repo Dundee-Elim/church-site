@@ -1,16 +1,80 @@
 import { useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ExternalLink, Mail, Phone, X } from 'lucide-react';
-import { Link } from 'react-router-dom';
 import SEOHead from '@/components/SEOHead';
+import {
+  Button,
+  GlassCard,
+  ImageCard,
+  PageHero,
+  ResponsiveGrid,
+  Section,
+} from '@/components/system';
 import { useSiteContent } from '@/contexts/SiteContentContext';
-import { ministryIconMap, ministryTagStyles, ministryThemeMap } from '@/lib/sitePresentation';
+import { ministryIconMap, ministryTagStyles } from '@/lib/sitePresentation';
 import { cardHover, fadeUp } from '@/lib/motion';
 import { filterPublishedItems, formatPhoneHref, getGlobalSiteInfo, resolveMediaSrc } from '@/lib/siteContentUtils';
 
-const specularLine = (
-  <div className="absolute inset-x-0 top-0 h-px" style={{ background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent)' }} />
-);
+function isExternalUrl(url) {
+  return /^https?:\/\//i.test(url || '');
+}
+
+function getNextStep(item) {
+  if (item.linkLabel) {
+    return item.linkLabel;
+  }
+
+  if (item.contactEmail || item.contactPhone) {
+    return 'Contact the team';
+  }
+
+  return 'Ask us about this';
+}
+
+function getMetaLabel(detail) {
+  const value = detail.toLowerCase();
+
+  if (value.includes('sunday') || value.includes('tuesday') || value.includes('thursday') || value.includes('monthly') || /\d/.test(value)) {
+    return 'When';
+  }
+
+  if (value.includes('church') || value.includes('dundee') || value.includes('home')) {
+    return 'Where';
+  }
+
+  if (value.includes('age') || value.includes('everyone') || value.includes('young') || value.includes('ladies') || value.includes('men')) {
+    return 'For';
+  }
+
+  return 'Focus';
+}
+
+function MinistryAction({ item, className = '' }) {
+  const label = getNextStep(item);
+
+  if (item.linkLabel && item.linkUrl) {
+    if (isExternalUrl(item.linkUrl)) {
+      return (
+        <Button href={item.linkUrl} target="_blank" rel="noreferrer" variant="soft" size="sm" className={className}>
+          {label}
+          <ExternalLink className="h-3.5 w-3.5" />
+        </Button>
+      );
+    }
+
+    return (
+      <Button to={item.linkUrl} variant="soft" size="sm" className={className}>
+        {label}
+      </Button>
+    );
+  }
+
+  return (
+    <span className={`inline-flex min-h-[2.75rem] items-center rounded-full border border-white/10 bg-white/[0.04] px-4 text-sm font-semibold text-blue-200 ${className}`}>
+      {label}
+    </span>
+  );
+}
 
 export default function Ministries() {
   const { content } = useSiteContent();
@@ -28,154 +92,176 @@ export default function Ministries() {
     <div className="pb-20">
       <SEOHead title={content.ministries.seo.title} description={content.ministries.seo.description} path="/ministries" />
 
-      <div className="page-hero">
-        <div className="page-hero-media">
-          <img src={resolveMediaSrc(content.ministries.header.image)} alt={content.ministries.header.image.alt || 'Ministries at Dundee Elim'} className="w-full h-full object-cover opacity-20" />
-          <div className="page-hero-overlay" />
-        </div>
-        <div className="page-hero-inner">
-          <span className="page-eyebrow">{content.ministries.header.eyebrow}</span>
-          <h1 className="page-title">
+      <PageHero
+        eyebrow={content.ministries.header.eyebrow}
+        title={(
+          <>
             {content.ministries.header.titleLead} <span className="text-gradient">{content.ministries.header.titleHighlight}</span>
-          </h1>
-          <p className="page-description">{content.ministries.header.description}</p>
-        </div>
-      </div>
+          </>
+        )}
+        description={content.ministries.header.description}
+        image={content.ministries.header.image}
+      />
 
-      <div className="section-wrap-compact pb-8">
-        <div className="section-inner flex flex-wrap justify-center gap-2">
+      <Section spacing="compact">
+        <div className="glass-chip-set mx-auto max-w-feature justify-center">
           {tags.map((tag) => (
             <button
               type="button"
               key={tag}
               onClick={() => setActiveTag(tag)}
-              className={`glass-chip ${activeTag === tag ? 'glass-chip-active' : ''}`}
+              className={`glass-chip min-w-11 ${activeTag === tag ? 'glass-chip-active' : ''}`}
             >
               {tag}
             </button>
           ))}
         </div>
-      </div>
+      </Section>
 
-      <section className="section-wrap-compact pt-0">
-        <div className="section-inner public-grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+      <Section spacing="compact" className="pt-0">
+        <ResponsiveGrid cols={3}>
           {visible.map((item, index) => {
-            const iconStyle = ministryThemeMap[item.theme] || ministryThemeMap.blue;
             const tagStyle = ministryTagStyles[item.tag] || ministryTagStyles['Proclaim Jesus'];
             const Icon = ministryIconMap[item.iconKey] || ministryIconMap.users;
+            const details = (item.details || []).slice(0, 3);
 
             return (
-              <motion.button
-                type="button"
+              <motion.article
                 key={`${item.title}-${index}`}
                 {...fadeUp}
-                transition={{ ...fadeUp.transition, delay: index * 0.04 }}
+                transition={{ ...fadeUp.transition, delay: index * 0.035 }}
                 {...cardHover}
-                className="glass-panel focus-ring flex cursor-pointer flex-col p-6 text-left sm:p-7"
-                onClick={() => setSelected(item)}
+                className="h-full"
               >
-                <div className="flex items-start justify-between mb-5">
-                  <div className="glass-icon-badge" style={{ background: iconStyle.bg }}>
-                    <Icon className={`w-6 h-6 ${iconStyle.color}`} />
+                <GlassCard className="flex h-full flex-col p-0">
+                  <button
+                    type="button"
+                    onClick={() => setSelected(item)}
+                    className="focus-ring flex flex-1 flex-col rounded-ds-card p-6 text-left sm:p-7"
+                  >
+                    <div className="mb-5 flex items-start justify-between gap-4">
+                      <span className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-ds-inner border border-white/10 bg-blue-300/10 text-blue-200">
+                        <Icon className="h-6 w-6" aria-hidden="true" />
+                      </span>
+                      <span
+                        className={`rounded-full px-2.5 py-1 text-xs font-medium ${tagStyle.text}`}
+                        style={{ background: tagStyle.bg, border: `1px solid ${tagStyle.border}` }}
+                      >
+                        {item.tag}
+                      </span>
+                    </div>
+                    <h3 className="font-display text-xl font-bold leading-tight text-white">{item.title}</h3>
+                    <p className="mt-3 text-sm leading-7 text-white/68">{item.summary}</p>
+                    <dl className="mt-5 grid gap-3">
+                      {details.map((detail) => (
+                        <div key={detail} className="rounded-ds-inner border border-white/10 bg-white/[0.035] px-4 py-3">
+                          <dt className="text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-blue-200/70">{getMetaLabel(detail)}</dt>
+                          <dd className="mt-1 text-sm font-medium leading-6 text-white/78">{detail}</dd>
+                        </div>
+                      ))}
+                    </dl>
+                  </button>
+                  <div className="border-t border-white/10 px-6 py-5 sm:px-7">
+                    <MinistryAction item={item} className="w-full" />
                   </div>
-                  <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${tagStyle.text}`} style={{ background: tagStyle.bg, border: `1px solid ${tagStyle.border}` }}>
-                    {item.tag}
-                  </span>
-                </div>
-                <h3 className="font-display text-xl font-bold text-white mb-2">{item.title}</h3>
-                <p className="text-white/55 text-sm leading-relaxed flex-1">{item.summary}</p>
-                <ul className="mt-4 space-y-1.5">
-                  {item.details.map((detail) => (
-                    <li key={detail} className="metadata-text flex items-center gap-2">
-                      <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${iconStyle.color.replace('text-', 'bg-')}`} />
-                      {detail}
-                    </li>
-                  ))}
-                </ul>
-                <span className={`mt-5 text-xs font-medium ${iconStyle.color} transition-opacity hover:opacity-80`}>
-                  Read more →
-                </span>
-              </motion.button>
+                </GlassCard>
+              </motion.article>
             );
           })}
-        </div>
-      </section>
+        </ResponsiveGrid>
+      </Section>
 
       <AnimatePresence>
         {selected && (
           <>
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.16 }} className="fixed inset-0 z-40" style={{ background: 'rgba(0,0,0,0.72)', backdropFilter: 'blur(6px)' }} onClick={() => setSelected(null)} />
-            <motion.div initial={{ opacity: 0, scale: 0.985, y: 8 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.985, y: 8 }} transition={{ duration: 0.18, ease: 'easeOut' }} className="fixed inset-0 z-50 flex items-center justify-center p-4">
-              <div className="glass-panel-strong relative max-h-[85vh] w-full max-w-2xl overflow-y-auto p-8">
-                <button type="button" aria-label="Close ministry details" onClick={() => setSelected(null)} className="glass-light focus-ring absolute right-4 top-4 p-2 text-white/70 transition-colors hover:text-white">
-                  <X className="w-4 h-4" />
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.16 }}
+              className="fixed inset-0 z-[110] bg-black/75 backdrop-blur-md"
+              onClick={() => setSelected(null)}
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.985, y: 8 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.985, y: 8 }}
+              transition={{ duration: 0.18, ease: 'easeOut' }}
+              className="fixed inset-0 z-[120] flex items-center justify-center p-4"
+            >
+              <GlassCard variant="feature" className="relative max-h-[86svh] w-full max-w-2xl overflow-y-auto">
+                <button
+                  type="button"
+                  aria-label="Close ministry details"
+                  onClick={() => setSelected(null)}
+                  className="glass-light focus-ring absolute right-4 top-4 inline-flex h-11 w-11 items-center justify-center rounded-full text-white/70 transition-colors hover:text-white"
+                >
+                  <X className="h-5 w-5" />
                 </button>
-                <div className="flex items-center gap-4 mb-6">
-                  <div className="glass-icon-badge" style={{ background: (ministryThemeMap[selected.theme] || ministryThemeMap.blue).bg }}>
-                    {(() => {
-                      const Icon = ministryIconMap[selected.iconKey] || ministryIconMap.users;
-                      const iconStyle = ministryThemeMap[selected.theme] || ministryThemeMap.blue;
-                      return <Icon className={`w-7 h-7 ${iconStyle.color}`} />;
-                    })()}
-                  </div>
-                  <div>
-                    <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${(ministryTagStyles[selected.tag] || ministryTagStyles['Proclaim Jesus']).text}`} style={{ background: (ministryTagStyles[selected.tag] || ministryTagStyles['Proclaim Jesus']).bg }}>
-                      {selected.tag}
-                    </span>
-                    <h2 className="font-display text-2xl font-bold text-white mt-1">{selected.title}</h2>
-                  </div>
+                <div className="pr-12">
+                  <span className="ds-eyebrow">{selected.tag}</span>
+                  <h2 className="mt-3 font-display text-3xl font-bold leading-tight text-white">{selected.title}</h2>
                 </div>
-                <div className="text-white/60 text-sm leading-relaxed whitespace-pre-line mb-6">{selected.body}</div>
-                <div className="flex flex-wrap gap-3">
-                  {selected.linkLabel && selected.linkUrl && (
-                    <a href={selected.linkUrl} target="_blank" rel="noreferrer" className="glass-action-primary px-4 text-sm font-medium">
-                      {selected.linkLabel}
-                      <ExternalLink className="w-3.5 h-3.5" />
-                    </a>
-                  )}
-                  {selectedEmail && (
-                    <a href={`mailto:${selectedEmail}`} className="glass-action-soft px-4 text-sm font-medium text-blue-300 hover:text-white">
-                      <Mail className="w-3.5 h-3.5" />
+                <div className="mt-6 whitespace-pre-line text-ds-body text-white/72">{selected.body}</div>
+                <dl className="mt-7 grid gap-3 sm:grid-cols-2">
+                  {(selected.details || []).map((detail) => (
+                    <div key={detail} className="rounded-ds-inner border border-white/10 bg-white/[0.04] px-4 py-3">
+                      <dt className="text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-blue-200/70">{getMetaLabel(detail)}</dt>
+                      <dd className="mt-1 text-sm font-medium leading-6 text-white/80">{detail}</dd>
+                    </div>
+                  ))}
+                </dl>
+                <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+                  <MinistryAction item={selected} />
+                  {selectedEmail ? (
+                    <Button href={`mailto:${selectedEmail}`} variant="soft" size="sm">
+                      <Mail className="h-3.5 w-3.5" />
                       {selectedEmail}
-                    </a>
-                  )}
-                  {selectedPhone && (
-                    <a href={`tel:${formatPhoneHref(selectedPhone)}`} className="glass-action-soft px-4 text-sm font-medium text-blue-300 hover:text-white">
-                      <Phone className="w-3.5 h-3.5" />
+                    </Button>
+                  ) : null}
+                  {selectedPhone ? (
+                    <Button href={`tel:${formatPhoneHref(selectedPhone)}`} variant="soft" size="sm">
+                      <Phone className="h-3.5 w-3.5" />
                       {selectedPhone}
-                    </a>
-                  )}
-                  <Link to="/contact" className="glass-action-secondary px-4 text-sm font-medium text-white/70 hover:text-white">
+                    </Button>
+                  ) : null}
+                  <Button to="/contact" variant="ghost" size="sm">
                     Get in touch
-                  </Link>
+                  </Button>
                 </div>
-              </div>
+              </GlassCard>
             </motion.div>
           </>
         )}
       </AnimatePresence>
 
-      <section className="section-wrap">
-        <div className="section-inner grid grid-cols-2 gap-3 lg:grid-cols-4">
+      <Section>
+        <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
           {content.ministries.photoStrip.map((asset, index) => (
-            <div key={`${asset.url}-${index}`} className="public-media aspect-square p-0.5">
-              <img src={resolveMediaSrc(asset)} alt={asset.alt || 'Community'} loading="lazy" className="h-full w-full object-cover opacity-85 transition-opacity duration-300 hover:opacity-100" />
-            </div>
+            <ImageCard
+              key={`${asset.url}-${index}`}
+              src={resolveMediaSrc(asset)}
+              alt={asset.alt || 'Community'}
+              ratio="square"
+              imgClassName="opacity-90"
+            />
           ))}
         </div>
-      </section>
+      </Section>
 
-      <section className="section-wrap-compact pt-0">
-        <div className="section-inner-narrow">
-          <div className="public-card text-center">
-            {specularLine}
-            <span className="section-kicker">Build community</span>
-            <p className="body-copy mx-auto mt-3 max-w-2xl">
-              Ministries are one way we make space for people to belong, grow, and follow Jesus together.
-            </p>
+      <Section spacing="compact" width="feature" className="pt-0">
+        <GlassCard variant="feature" className="text-center">
+          <p className="ds-eyebrow">Build community</p>
+          <p className="mx-auto mt-4 max-w-text text-ds-body text-white/72">
+            Ministries are one way we make space for people to belong, grow, and follow Jesus together.
+          </p>
+          <div className="mt-7">
+            <Button to="/contact" variant="soft">
+              Ask about getting involved
+            </Button>
           </div>
-        </div>
-      </section>
+        </GlassCard>
+      </Section>
     </div>
   );
 }

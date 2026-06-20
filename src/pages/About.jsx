@@ -1,23 +1,47 @@
 import { motion } from 'framer-motion';
+import { Bus, Car, CheckCircle2, MapPin } from 'lucide-react';
 import SEOHead from '@/components/SEOHead';
+import {
+  Button,
+  GlassCard,
+  ImageCard,
+  PageHero,
+  ResponsiveGrid,
+  Section,
+  SectionHeader,
+} from '@/components/system';
 import { useSiteContent } from '@/contexts/SiteContentContext';
-import { fadeRight, fadeUp, subtleTap } from '@/lib/motion';
+import { fadeRight, fadeUp } from '@/lib/motion';
 import { getGlobalSiteInfo, resolveMediaSrc } from '@/lib/siteContentUtils';
 import { aboutTravelConfig } from '@/lib/sitePresentation';
 
-const specularLine = (
-  <div className="absolute inset-x-0 top-0 h-px" style={{ background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.18), transparent)' }} />
-);
+const travelFallbackIcons = { address: MapPin, car: Car, bus: Bus };
 
-const missionPillars = [
-  'Proclaim Jesus',
-  'Build Community',
-  'Serve the City',
-];
+function dedupeSentences(parts) {
+  const seen = new Set();
+
+  return parts
+    .filter(Boolean)
+    .flatMap((part) => String(part).match(/[^.!?]+[.!?]?/g) || [])
+    .map((sentence) => sentence.trim())
+    .filter(Boolean)
+    .filter((sentence) => {
+      const key = sentence.toLowerCase().replace(/\s+/g, ' ').replace(/[.!?]$/, '');
+
+      if (seen.has(key)) {
+        return false;
+      }
+
+      seen.add(key);
+      return true;
+    })
+    .join(' ');
+}
 
 export default function About() {
   const { content } = useSiteContent();
   const globalInfo = getGlobalSiteInfo(content);
+  const expectationNote = dedupeSentences([globalInfo.communionNote, content.about.sundayExpectations.note]);
   const gettingHereCards = (content.about.gettingHere.cards || []).map((card) => {
     if (card.kind === 'address') {
       return {
@@ -46,175 +70,146 @@ export default function About() {
     <div className="pb-20">
       <SEOHead title={content.about.seo.title} description={content.about.seo.description} path="/about" />
 
-      <div className="page-hero">
-        <div className="page-hero-media">
-          <img src={resolveMediaSrc(content.about.header.image)} alt={content.about.header.image.alt || 'About Dundee Elim'} className="w-full h-full object-cover opacity-20" />
-          <div className="page-hero-overlay" />
-        </div>
-        <div className="page-hero-inner">
-          <span className="page-eyebrow">{content.about.header.eyebrow}</span>
-          <h1 className="page-title">
+      <PageHero
+        eyebrow={content.about.header.eyebrow}
+        title={(
+          <>
             {content.about.header.titleLead} <span className="text-gradient">{content.about.header.titleHighlight}</span>
-          </h1>
-          <p className="page-description">{content.about.header.description}</p>
-        </div>
-      </div>
+          </>
+        )}
+        description={content.about.header.description}
+        image={content.about.header.image}
+      />
 
-      <section className="section-wrap">
-        <div className="section-inner grid grid-cols-1 items-center gap-10 lg:grid-cols-2 lg:gap-16">
-          <motion.div {...fadeUp} className="relative">
-            <div className="absolute -inset-4 rounded-3xl" style={{ background: 'radial-gradient(circle, rgba(80,130,255,0.12) 0%, transparent 70%)' }} />
-            <div className="public-media">
-              <img src={resolveMediaSrc(content.about.pastors.image)} alt={content.about.pastors.image.alt || 'Pastors'} className="w-full object-cover shadow-2xl" />
-            </div>
-          </motion.div>
-          <motion.div {...fadeRight}>
-            <span className="text-blue-400 text-xs uppercase tracking-widest font-medium">{content.about.pastors.eyebrow}</span>
-            <h2 className="section-title mb-6 text-left">
-              {content.about.pastors.titleLead}
-              <br />
-              {content.about.pastors.titleHighlight}
-            </h2>
-            {content.about.pastors.paragraphs.map((paragraph) => (
-              <p key={paragraph} className="body-copy mb-4">
-                {paragraph}
-              </p>
-            ))}
-          </motion.div>
-        </div>
-      </section>
-
-      <section className="section-wrap-compact">
-        <div className="section-inner-narrow">
-          <motion.div
-            {...fadeUp}
-            className="glass-panel px-6 py-7 text-center sm:px-8 sm:py-9 lg:px-10 lg:py-11"
-            style={{
-              background:
-                'linear-gradient(135deg, rgba(14,27,56,0.9), rgba(8,13,31,0.92)), radial-gradient(circle at 50% 0%, rgba(56,189,248,0.13), transparent 52%), radial-gradient(circle at 100% 100%, rgba(139,92,246,0.12), transparent 46%)',
-              borderColor: 'rgba(255,255,255,0.13)',
-            }}
-          >
-            {specularLine}
-            <div className="relative z-10">
-              <h2 className="font-display text-2xl font-semibold leading-tight text-cyan-100 sm:text-3xl">
-                Vision & Mission
-              </h2>
-              <h2 className="mx-auto mt-5 max-w-3xl font-display text-[2rem] font-bold leading-[1.12] text-white sm:text-[2.45rem] sm:leading-[1.1] lg:text-[2.65rem]">
-                To see the people of Dundee transformed by Jesus.
-              </h2>
-              <p className="mx-auto mt-6 max-w-2xl text-base font-medium leading-8 text-white/72 sm:text-lg sm:leading-9">
-                We live this out through three simple commitments.
-              </p>
-
-              <div className="mx-auto mt-8 flex max-w-2xl flex-col overflow-hidden rounded-[var(--radius-soft)] border border-white/10 bg-white/[0.035] sm:flex-row">
-                {missionPillars.map((pillar) => (
-                  <div key={pillar} className="border-b border-white/10 px-5 py-[1.125rem] last:border-b-0 sm:flex-1 sm:border-b-0 sm:border-r sm:px-5 sm:py-5 sm:last:border-r-0">
-                    <h3 className="font-display text-[1.22rem] font-semibold leading-[1.25] text-white sm:text-xl">{pillar}</h3>
-                  </div>
-                ))}
-              </div>
-
-              <p className="mt-7 bg-gradient-to-r from-white via-cyan-100 to-blue-200 bg-clip-text font-display text-xl font-semibold leading-[1.15] text-transparent sm:text-2xl">
-                Proclaim · Build · Serve
-              </p>
-            </div>
-          </motion.div>
-        </div>
-      </section>
-
-      <section className="section-wrap pb-8 sm:pb-10 lg:pb-12">
-        <div className="section-inner">
-          <div className="section-heading">
-            <h2 className="section-title">{content.about.sundayExpectations.title}</h2>
-            <p className="section-copy">{content.about.sundayExpectations.description}</p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {content.about.sundayExpectations.items.map((item) => (
-              <motion.div key={item.number} {...fadeUp} className="public-card">
-                {specularLine}
-                <div className="text-4xl font-display font-bold mb-3" style={{ color: 'rgba(96,165,250,0.2)' }}>{item.number}</div>
-                <h3 className="card-title mb-2 text-lg">{item.title}</h3>
-                <p className="body-copy text-sm">{item.description}</p>
-              </motion.div>
-            ))}
-          </div>
-          <div className="glass-panel mt-5 p-6">
-            {specularLine}
-            <p className="body-copy text-center text-sm whitespace-pre-line">
-              <span className="text-blue-300 font-medium">Note:</span> {[globalInfo.communionNote, content.about.sundayExpectations.note].filter(Boolean).join(' ')}
-            </p>
-          </div>
-        </div>
-      </section>
-
-      <section className="section-wrap pt-8 sm:pt-10 lg:pt-12">
-        <div className="section-inner">
-          <div className="section-heading">
-            <h2 className="section-title">{content.about.gettingHere.title}</h2>
-          </div>
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 mb-5">
-            {gettingHereCards.map((card) => {
-              const style = aboutTravelConfig[card.kind] || aboutTravelConfig.address;
-              const Icon = style.Icon;
-
-              return (
-                <motion.div key={card.title} {...fadeUp} className="public-card">
-                  {specularLine}
-                  <div className="glass-icon-badge mb-4" style={{ background: style.bg }}>
-                    <Icon className={`w-6 h-6 ${style.color}`} />
-                  </div>
-                  <h3 className="card-title mb-3 text-lg">{card.title}</h3>
-                  <p className="body-copy text-sm whitespace-pre-line">{card.description}</p>
-                  {card.linkLabel && card.linkUrl && (
-                    <motion.a {...subtleTap} href={card.linkUrl} target="_blank" rel="noreferrer" className="glass-action-soft mt-4 inline-flex px-5 text-sm text-blue-300 hover:text-white">
-                      {card.linkLabel} →
-                    </motion.a>
-                  )}
-                </motion.div>
-              );
-            })}
-          </div>
-          {globalInfo.parking.parkingChargesUrl && (
-            <div className="mb-5 text-center">
-              <motion.a
-                {...subtleTap}
-                href={globalInfo.parking.parkingChargesUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="glass-action-soft inline-flex px-5 text-sm text-blue-300 hover:text-white"
-              >
-                Dundee City Council parking charges →
-              </motion.a>
-            </div>
-          )}
-          <motion.div {...fadeUp} className="public-media">
-            <iframe
-              src={content.about.gettingHere.mapEmbedUrl || content.settings.links.mapsEmbedUrl}
-              className="w-full h-72"
-              style={{ border: 0 }}
-              allowFullScreen
-              loading="lazy"
-              title="Church Location"
+      <Section>
+        <div className="grid items-center gap-8 lg:grid-cols-[0.92fr_1.08fr] lg:gap-14">
+          <motion.div {...fadeUp} className="mx-auto w-full max-w-[520px] lg:max-w-none">
+            <ImageCard
+              src={resolveMediaSrc(content.about.pastors.image)}
+              alt={content.about.pastors.image.alt || 'Pastors'}
+              ratio="portrait"
+              className="mx-auto max-h-[640px]"
+              imgClassName="object-[center_18%]"
             />
           </motion.div>
-        </div>
-      </section>
-
-      <section className="section-wrap">
-        <div className="section-inner-narrow">
-          <div className="glass-panel lg-iridescent p-6 text-center sm:p-10">
-            {specularLine}
-            <div className="relative z-10">
-              <h2 className="section-title mb-4 text-3xl">{content.about.network.title}</h2>
-              <p className="body-copy mb-4 text-sm">{content.about.network.description}</p>
-              <motion.a {...subtleTap} href={content.about.network.linkUrl} target="_blank" rel="noreferrer" className="glass-action-soft inline-flex px-5 text-sm font-medium text-blue-300 hover:text-white">
-                {content.about.network.linkLabel} →
-              </motion.a>
+          <motion.div {...fadeRight} className="mx-auto max-w-text text-center lg:text-left">
+            <p className="ds-eyebrow">{content.about.pastors.eyebrow}</p>
+            <h2 className="ds-section-title">
+              {content.about.pastors.titleLead}
+              <br />
+              <span className="text-gradient">{content.about.pastors.titleHighlight}</span>
+            </h2>
+            <div className="mt-6 space-y-4 text-ds-body text-white/72">
+              {content.about.pastors.paragraphs.map((paragraph) => (
+                <p key={paragraph}>{paragraph}</p>
+              ))}
             </div>
-          </div>
+          </motion.div>
         </div>
-      </section>
+      </Section>
+
+      <Section spacing="compact" width="feature">
+        <GlassCard variant="feature" className="overflow-hidden text-center">
+          <div className="absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+          <p className="ds-eyebrow">Vision & Mission</p>
+          <h2 className="mx-auto mt-4 max-w-[760px] font-display text-[2rem] font-bold leading-[1.12] text-white sm:text-[2.55rem] lg:text-[2.9rem]">
+            To see the people of Dundee transformed by Jesus.
+          </h2>
+          <p className="mx-auto mt-5 max-w-text text-ds-body text-white/72">
+            We live this out through three simple commitments that shape our worship, our community, and our service in the city.
+          </p>
+          <div className="mt-8 grid gap-3 sm:grid-cols-3">
+            {['Proclaim Jesus', 'Build Community', 'Serve the City'].map((pillar) => (
+              <div key={pillar} className="rounded-ds-inner border border-white/10 bg-white/[0.04] px-5 py-5">
+                <CheckCircle2 className="mx-auto mb-3 h-5 w-5 text-blue-200" aria-hidden="true" />
+                <h3 className="font-display text-xl font-semibold text-white">{pillar}</h3>
+              </div>
+            ))}
+          </div>
+        </GlassCard>
+      </Section>
+
+      <Section>
+        <SectionHeader
+          title={content.about.sundayExpectations.title}
+          description={content.about.sundayExpectations.description}
+        />
+        <ResponsiveGrid cols={3} className="mt-10">
+          {content.about.sundayExpectations.items.map((item) => (
+            <motion.div key={item.number} {...fadeUp}>
+              <GlassCard className="flex h-full flex-col">
+                <div className="mb-5 flex items-center gap-3">
+                  <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-blue-200/15 bg-blue-300/10 font-display text-lg font-bold text-blue-100">
+                    {item.number}
+                  </span>
+                  <h3 className="font-display text-xl font-bold leading-tight text-white">{item.title}</h3>
+                </div>
+                <p className="text-sm leading-7 text-white/70 sm:text-base">{item.description}</p>
+              </GlassCard>
+            </motion.div>
+          ))}
+        </ResponsiveGrid>
+        {expectationNote ? (
+          <GlassCard className="mx-auto mt-6 max-w-feature text-center">
+            <p className="text-sm leading-7 text-white/72 sm:text-base">
+              <span className="font-semibold text-blue-200">Note:</span> {expectationNote}
+            </p>
+          </GlassCard>
+        ) : null}
+      </Section>
+
+      <Section spacing="compact">
+        <SectionHeader title={content.about.gettingHere.title} />
+        <ResponsiveGrid cols={3} className="mt-9">
+          {gettingHereCards.map((card) => {
+            const style = aboutTravelConfig[card.kind] || aboutTravelConfig.address;
+            const Icon = style.Icon || travelFallbackIcons[card.kind] || MapPin;
+
+            return (
+              <GlassCard key={card.title} className="flex h-full flex-col">
+                <span className="inline-flex h-12 w-12 items-center justify-center rounded-ds-inner border border-white/10 bg-blue-300/10 text-blue-200">
+                  <Icon className="h-6 w-6" aria-hidden="true" />
+                </span>
+                <h3 className="mt-5 font-display text-xl font-bold text-white">{card.title}</h3>
+                <p className="mt-3 flex-1 whitespace-pre-line text-sm leading-7 text-white/70">{card.description}</p>
+                {card.linkLabel && card.linkUrl ? (
+                  <Button href={card.linkUrl} target="_blank" rel="noreferrer" variant="soft" size="sm" className="mt-5 self-start">
+                    {card.linkLabel}
+                  </Button>
+                ) : null}
+              </GlassCard>
+            );
+          })}
+        </ResponsiveGrid>
+        {globalInfo.parking.parkingChargesUrl ? (
+          <div className="mt-6 text-center">
+            <Button href={globalInfo.parking.parkingChargesUrl} target="_blank" rel="noreferrer" variant="soft" size="sm">
+              Dundee City Council parking charges
+            </Button>
+          </div>
+        ) : null}
+        <div className="mt-8 overflow-hidden rounded-ds-feature border border-white/10 bg-white/[0.04] p-1 shadow-2xl shadow-black/30">
+          <iframe
+            src={content.about.gettingHere.mapEmbedUrl || content.settings.links.mapsEmbedUrl}
+            className="h-72 w-full rounded-[calc(var(--ds-radius-feature)-0.35rem)] sm:h-80"
+            style={{ border: 0 }}
+            allowFullScreen
+            loading="lazy"
+            title="Church Location"
+          />
+        </div>
+      </Section>
+
+      <Section width="feature">
+        <GlassCard variant="feature" className="text-center">
+          <p className="ds-eyebrow">Elim Network</p>
+          <h2 className="ds-section-title">{content.about.network.title}</h2>
+          <p className="mx-auto mt-4 max-w-text text-ds-body text-white/72">{content.about.network.description}</p>
+          <Button href={content.about.network.linkUrl} target="_blank" rel="noreferrer" variant="soft" className="mt-7">
+            {content.about.network.linkLabel}
+          </Button>
+        </GlassCard>
+      </Section>
     </div>
   );
 }

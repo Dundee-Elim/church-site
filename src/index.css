@@ -32,6 +32,61 @@
     --radius-hero: 1.92rem;
     --control-height: 3rem;
     --control-height-compact: 2.55rem;
+
+    /* ── Design System tokens ── */
+    /* Layout widths */
+    --ds-w-page: 1120px;
+    --ds-w-feature: 960px;
+    --ds-w-text: 720px;
+
+    /* Section rhythm (mobile-first; overridden in media queries below) */
+    --ds-section-y: 56px;
+    --ds-section-y-compact: 40px;
+    --ds-section-y-spacious: 72px;
+    --ds-gutter-x: 20px;
+
+    /* Card radii */
+    --ds-radius-card: 24px;
+    --ds-radius-feature: 32px;
+    --ds-radius-inner: 18px;
+
+    /* Navbar */
+    --ds-navbar-h: 60px;
+
+    /* Hero heights */
+    --ds-hero-home: 620px;
+    --ds-hero-page: 300px;
+
+    /* Type scale */
+    --ds-text-hero: clamp(2.5rem, 7vw, 4rem);
+    --ds-text-page-title: clamp(2rem, 5vw, 3.25rem);
+    --ds-text-section: clamp(1.65rem, 3.5vw, 2.5rem);
+    --ds-text-card: 1.25rem;
+    --ds-text-body: 1rem;
+    --ds-text-label: 0.7rem;
+  }
+
+  @media (min-width: 768px) {
+    :root {
+      --ds-section-y: 72px;
+      --ds-section-y-compact: 52px;
+      --ds-section-y-spacious: 88px;
+      --ds-gutter-x: 24px;
+      --ds-navbar-h: 68px;
+      --ds-hero-home: 680px;
+      --ds-hero-page: 340px;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    :root {
+      --ds-section-y: 96px;
+      --ds-section-y-compact: 64px;
+      --ds-section-y-spacious: 120px;
+      --ds-gutter-x: 32px;
+      --ds-hero-home: 720px;
+      --ds-hero-page: 380px;
+    }
   }
 }
 
@@ -670,5 +725,177 @@
 
   .admin-portal-theme .font-display {
     letter-spacing: -0.02em;
+  }
+}
+
+/* ──────────────────────────────────────────────────────────────
+   Design System — unified public UI primitives (ds- prefix)
+   Additive layer used by src/components/system/*. Existing
+   public-* / section-* classes remain for not-yet-migrated pages.
+   ────────────────────────────────────────────────────────────── */
+@layer components {
+  /* Layout shells */
+  .ds-shell {
+    width: 100%;
+    max-width: var(--ds-w-page);
+    margin-inline: auto;
+    padding-inline: var(--ds-gutter-x);
+  }
+
+  .ds-shell-feature {
+    width: 100%;
+    max-width: var(--ds-w-feature);
+    margin-inline: auto;
+    padding-inline: var(--ds-gutter-x);
+  }
+
+  .ds-shell-text {
+    width: 100%;
+    max-width: var(--ds-w-text);
+    margin-inline: auto;
+    padding-inline: var(--ds-gutter-x);
+  }
+
+  /* Section vertical rhythm */
+  .ds-section {
+    padding-block: var(--ds-section-y);
+  }
+
+  .ds-section--compact {
+    padding-block: var(--ds-section-y-compact);
+  }
+
+  .ds-section--spacious {
+    padding-block: var(--ds-section-y-spacious);
+  }
+
+  /* Section header type */
+  .ds-eyebrow {
+    font-size: var(--ds-text-label);
+    line-height: 1;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: rgba(147, 178, 245, 0.85);
+  }
+
+  .ds-section-title {
+    margin-top: 0.75rem;
+    font-family: 'Playfair Display', serif;
+    font-size: var(--ds-text-section);
+    font-weight: 700;
+    line-height: 1.12;
+    letter-spacing: -0.01em;
+    color: #fff;
+  }
+
+  .ds-section-copy {
+    margin-top: 0.85rem;
+    font-size: var(--ds-text-body);
+    line-height: 1.7;
+    color: rgba(255, 255, 255, 0.72);
+  }
+
+  /* Unified glass card — one consistent style */
+  .ds-card {
+    position: relative;
+    border-radius: var(--ds-radius-card);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(28px) saturate(150%);
+    -webkit-backdrop-filter: blur(28px) saturate(150%);
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.1) inset,
+      0 12px 36px rgba(0, 0, 0, 0.28);
+    padding: 1.5rem;
+  }
+
+  @media (min-width: 768px) {
+    .ds-card { padding: 1.75rem; }
+  }
+
+  .ds-card--feature {
+    border-radius: var(--ds-radius-feature);
+    background: rgba(255, 255, 255, 0.07);
+    padding: 1.75rem;
+  }
+
+  @media (min-width: 768px) {
+    .ds-card--feature { padding: 2.25rem; }
+  }
+
+  .ds-card--interactive {
+    transition: transform 0.22s ease, border-color 0.22s ease, background-color 0.22s ease;
+  }
+
+  .ds-card--interactive:hover {
+    transform: translateY(-3px);
+    border-color: rgba(255, 255, 255, 0.18);
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ds-card--interactive:hover { transform: none; }
+  }
+
+  /* Image cards — fixed aspect ratios, contained zoom */
+  .ds-image-card {
+    position: relative;
+    overflow: hidden;
+    border-radius: var(--ds-radius-card);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.04);
+  }
+
+  .ds-image-card > img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+  }
+
+  .ds-image-card:hover > img {
+    transform: scale(1.04);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ds-image-card:hover > img { transform: none; }
+  }
+
+  /* Navbar states — readable over images, maps and light embeds */
+  .ds-navbar {
+    position: relative;
+    transition: background-color 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease, backdrop-filter 0.4s ease;
+    border-radius: 30px;
+    border: 1px solid transparent;
+    overflow: hidden;
+  }
+
+  .ds-navbar--top {
+    background: rgba(7, 15, 32, 0.82);
+    backdrop-filter: blur(24px) saturate(165%);
+    -webkit-backdrop-filter: blur(24px) saturate(165%);
+    border-color: rgba(255, 255, 255, 0.13);
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.12) inset, 0 10px 34px rgba(0, 0, 0, 0.36);
+  }
+
+  .ds-navbar--scrolled {
+    background: rgba(7, 15, 32, 0.94);
+    backdrop-filter: blur(28px) saturate(160%);
+    -webkit-backdrop-filter: blur(28px) saturate(160%);
+    border-color: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 34px rgba(0, 0, 0, 0.5);
+  }
+
+  .edge-render-fallback .ds-navbar--top {
+    background: rgba(11, 23, 48, 0.96) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+
+  .edge-render-fallback .ds-navbar--scrolled {
+    background: rgba(7, 15, 32, 0.97) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
   }
 }
