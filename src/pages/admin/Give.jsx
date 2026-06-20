@@ -163,8 +163,6 @@ export default function AdminGivePage() {
                 <div className="grid gap-4 md:grid-cols-2">
                   <Field label="CTA Label" value={method.ctaLabel} onChange={(value) => updateMethod(index, 'ctaLabel', value)} />
                   <Field label="CTA URL" value={method.ctaUrl} onChange={(value) => updateMethod(index, 'ctaUrl', value)} placeholder="https://..." />
-                  <Field label="Contact Email" value={method.contactEmail} onChange={(value) => updateMethod(index, 'contactEmail', value)} />
-                  <Field label="Contact Phone" value={method.contactPhone} onChange={(value) => updateMethod(index, 'contactPhone', value)} />
                 </div>
 
                 <AreaField

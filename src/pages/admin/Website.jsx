@@ -167,11 +167,51 @@ function GlobalEditor({ admin }) {
     admin.updateValue(['settings', ...path], value);
   }
 
+  function normalizePhoneHref(value) {
+    return String(value || '').replace(/[^\d+]/g, '');
+  }
+
+  function updateGlobalChurchName(value) {
+    update(['siteInfo', 'churchName'], value);
+    // Keep legacy/branding display fields aligned for compatibility.
+    update(['siteName'], value);
+  }
+
+  function updateMainMobileNumber(value) {
+    const normalized = normalizePhoneHref(value);
+
+    update(['siteInfo', 'mobileNumberDisplay'], value);
+    update(['siteInfo', 'mobileNumberHref'], normalized);
+
+    // Keep legacy compatibility fields in sync without exposing separate inputs.
+    update(['contact', 'phoneDisplay'], value);
+    update(['contact', 'phoneHref'], normalized);
+  }
+
+  function updateMainContactEmail(value) {
+    update(['siteInfo', 'contactEmail'], value);
+    // Keep legacy compatibility field in sync.
+    update(['contact', 'email'], value);
+  }
+
+  function updateAddress(field, value) {
+    update(['siteInfo', field], value);
+
+    const legacyField = {
+      addressLine1: 'addressLine1',
+      addressLine2: 'addressLine2',
+      addressShort: 'addressShort',
+    }[field];
+
+    if (legacyField) {
+      update(['contact', legacyField], value);
+    }
+  }
+
   return (
     <div className="space-y-6">
       <EditorSection title="Church Information" description="The main details shown across the website and footer.">
         <div className="grid gap-4 md:grid-cols-2">
-          <Field label="Church Name" value={settings.siteName} onChange={(value) => update(['siteName'], value)} />
           <Field label="Short Name" value={settings.shortName} onChange={(value) => update(['shortName'], value)} />
           <Field label="Tagline" value={settings.tagline} onChange={(value) => update(['tagline'], value)} />
         </div>
@@ -179,16 +219,16 @@ function GlobalEditor({ admin }) {
       </EditorSection>
 
       <EditorSection title="Global Site Information" description="Central source of truth for contact, service, safeguarding, giving, and parking details used across the public website.">
+        <p className="mb-4 text-sm text-muted-foreground">These details are used across the website. Change them here once to update every page.</p>
         <div className="grid gap-4 md:grid-cols-2">
-          <Field label="Church Name" value={settings.siteInfo.churchName} onChange={(value) => update(['siteInfo', 'churchName'], value)} />
-          <Field label="Main Contact Email" value={settings.siteInfo.contactEmail} onChange={(value) => update(['siteInfo', 'contactEmail'], value)} />
-          <Field label="Main Mobile Number" value={settings.siteInfo.mobileNumberDisplay} onChange={(value) => update(['siteInfo', 'mobileNumberDisplay'], value)} placeholder="07950 959525" />
-          <Field label="Mobile Link Value" value={settings.siteInfo.mobileNumberHref} onChange={(value) => update(['siteInfo', 'mobileNumberHref'], value)} placeholder="07950959525" />
+          <Field label="Church Name" value={settings.siteInfo.churchName} onChange={updateGlobalChurchName} />
+          <Field label="Main Contact Email" value={settings.siteInfo.contactEmail} onChange={updateMainContactEmail} />
+          <Field label="Main Mobile Number" value={settings.siteInfo.mobileNumberDisplay} onChange={updateMainMobileNumber} placeholder="07950 959525" />
           <Field label="Safeguarding Email" value={settings.siteInfo.safeguardingEmail} onChange={(value) => update(['siteInfo', 'safeguardingEmail'], value)} placeholder="safeguarding@dundee-elim.org.uk" />
           <Field label="Sunday Service Time" value={settings.siteInfo.sundayServiceTime} onChange={(value) => update(['siteInfo', 'sundayServiceTime'], value)} placeholder="10:30 AM" />
-          <Field label="Address Line 1" value={settings.siteInfo.addressLine1} onChange={(value) => update(['siteInfo', 'addressLine1'], value)} />
-          <Field label="Address Line 2" value={settings.siteInfo.addressLine2} onChange={(value) => update(['siteInfo', 'addressLine2'], value)} />
-          <Field label="Short Address" value={settings.siteInfo.addressShort} onChange={(value) => update(['siteInfo', 'addressShort'], value)} />
+          <Field label="Address Line 1" value={settings.siteInfo.addressLine1} onChange={(value) => updateAddress('addressLine1', value)} />
+          <Field label="Address Line 2" value={settings.siteInfo.addressLine2} onChange={(value) => updateAddress('addressLine2', value)} />
+          <Field label="Short Address" value={settings.siteInfo.addressShort} onChange={(value) => updateAddress('addressShort', value)} />
         </div>
         <AreaField label="Communion Note" value={settings.siteInfo.communionNote} onChange={(value) => update(['siteInfo', 'communionNote'], value)} rows={2} />
       </EditorSection>
@@ -231,17 +271,6 @@ function GlobalEditor({ admin }) {
           <Field label="YouTube URL" value={settings.siteInfo.social.youtubeUrl} onChange={(value) => update(['siteInfo', 'social', 'youtubeUrl'], value)} placeholder="https://youtube.com/..." />
           <Field label="Facebook URL" value={settings.siteInfo.social.facebookUrl} onChange={(value) => update(['siteInfo', 'social', 'facebookUrl'], value)} placeholder="https://facebook.com/..." />
           <Field label="Instagram URL" value={settings.siteInfo.social.instagramUrl} onChange={(value) => update(['siteInfo', 'social', 'instagramUrl'], value)} placeholder="https://instagram.com/..." />
-        </div>
-      </EditorSection>
-
-      <EditorSection title="Legacy Contact (Compatibility)" description="Older fields kept for compatibility. Site now reads from Global Site Information.">
-        <div className="grid gap-4 md:grid-cols-2">
-          <Field label="Email" value={settings.contact.email} onChange={(value) => update(['contact', 'email'], value)} />
-          <Field label="Phone Number" value={settings.contact.phoneDisplay} onChange={(value) => update(['contact', 'phoneDisplay'], value)} />
-          <Field label="Phone Link Value" value={settings.contact.phoneHref} onChange={(value) => update(['contact', 'phoneHref'], value)} placeholder="07950959525" />
-          <Field label="Address Line 1" value={settings.contact.addressLine1} onChange={(value) => update(['contact', 'addressLine1'], value)} />
-          <Field label="Address Line 2" value={settings.contact.addressLine2} onChange={(value) => update(['contact', 'addressLine2'], value)} />
-          <Field label="Short Address" value={settings.contact.addressShort} onChange={(value) => update(['contact', 'addressShort'], value)} />
         </div>
       </EditorSection>
 
